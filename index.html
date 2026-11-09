@@ -1,0 +1,1540 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>数学者チャンピオンズ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Zen+Antique&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* Layout: blackboard / graph-paper surface. Header with three tabs (対戦 / 図鑑 / 企画書).
+   Battle = arena (two fighters) left, commands + log right. Dex = card grid. Plan = single readable column. */
+:root {
+  --bg: #eef2f0;
+  --grid: #d7e0dc;
+  --panel: #fbfdfc;
+  --fg: #12201c;
+  --muted: #53655f;
+  --line: #c3d0ca;
+  --accent: #0f6b52;
+  --on-accent: #ffffff;
+  --t0: #b8400b; /* 数論 */
+  --t1: #5f3dc4; /* 代数 */
+  --t2: #0a7a5a; /* 幾何 */
+  --t3: #1864ab; /* 解析 */
+  --t4: #b0124f; /* 確率 */
+  --t5: #7a5c00; /* 論理 */
+  --hp-ok: #1f8f55;
+  --hp-mid: #c28a00;
+  --hp-low: #c0392b;
+  --font-display: 'Zen Antique', 'Shippori Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  --font-body: 'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', sans-serif;
+  --font-mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1715; --grid: #18262366; --panel: #15221f; --fg: #e8efe9; --muted: #98aca4; --line: #2b3f39;
+    --accent: #7ddfbb; --on-accent: #08241b;
+    --t0: #ff8a4c; --t1: #a58bff; --t2: #3ddba6; --t3: #5aa9ff; --t4: #ff6f9c; --t5: #e5c14b;
+    --hp-ok: #3fcf7f; --hp-mid: #e5b53a; --hp-low: #ff6b5b;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1715; --grid: #18262366; --panel: #15221f; --fg: #e8efe9; --muted: #98aca4; --line: #2b3f39;
+  --accent: #7ddfbb; --on-accent: #08241b;
+  --t0: #ff8a4c; --t1: #a58bff; --t2: #3ddba6; --t3: #5aa9ff; --t4: #ff6f9c; --t5: #e5c14b;
+  --hp-ok: #3fcf7f; --hp-mid: #e5b53a; --hp-low: #ff6b5b;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 28px 28px;
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.7;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+}
+.wrap { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
+h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(28px, 6vw, 44px); line-height: 1.15; margin: 0; letter-spacing: .02em; text-wrap: balance; }
+.sub { font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+.tabs { display: flex; gap: 4px; background: var(--panel); border: 1px solid var(--line); padding: 4px; border-radius: 10px; }
+.tabs button { font: inherit; font-weight: 700; border: 0; background: transparent; color: var(--muted); padding: 8px 18px; border-radius: 7px; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--accent); color: var(--on-accent); }
+button:focus-visible, input:focus-visible + .upl { outline: 2px solid var(--accent); outline-offset: 2px; }
+h2 { font-family: var(--font-display); font-weight: 400; font-size: 22px; margin: 0 0 4px; text-wrap: balance; }
+h3 { font-size: 14px; margin: 0 0 8px; letter-spacing: .04em; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+.chip { display: inline-block; font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .06em; padding: 1px 8px; border-radius: 99px; color: var(--c); border: 1px solid var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); white-space: nowrap; }
+.chip.btn { font-family: var(--font-body); font-size: 13px; padding: 3px 12px; cursor: pointer; }
+.chip.btn[aria-pressed="true"] { background: var(--c); color: var(--panel); }
+.glyph { flex: none; width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; color: var(--c); border: 2px solid var(--c); background: color-mix(in srgb, var(--c) 10%, var(--panel)); overflow: hidden; }
+.glyph > svg { width: 100%; height: 100%; display: block; }
+.glyph svg svg { stroke-width: 3.6px; }
+.eye { transform-box: fill-box; transform-origin: center; animation: blink 5s infinite; }
+@keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+.fighter .glyph > svg { animation: bob 3.4s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(-1.5px); } }
+.glyph img { width: 100%; height: 100%; object-fit: cover; }
+button.act, .btn { font: inherit; font-weight: 700; border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent); padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+button.act.ghost, .btn.ghost { background: transparent; color: var(--accent); }
+button.sm, .upl { font-size: 12px; padding: 5px 12px; }
+button:disabled { opacity: .4; cursor: not-allowed; }
+
+/* select */
+.strip { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-bottom: 16px; }
+.slots { display: flex; flex-wrap: wrap; gap: 8px; flex: 1 1 260px; min-width: 0; }
+.slot { font-family: var(--font-mono); font-size: 13px; border: 1px dashed var(--line); border-radius: 8px; padding: 6px 12px; min-width: 96px; text-align: center; color: var(--muted); }
+.slot.on { border-style: solid; border-color: var(--accent); color: var(--fg); }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 12px; align-items: center; }
+.roster { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+.card { position: relative; text-align: left; font: inherit; color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: flex; gap: 12px; cursor: pointer; min-width: 0; }
+.card:hover { border-color: var(--muted); }
+.card[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.card .info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.card .nm { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-weight: 700; }
+.card .yr, .card .st { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.card .bl { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.card .abl { font-size: 12px; line-height: 1.5; }
+.card .abl b, .ab b { color: var(--accent); }
+.order { position: absolute; top: 8px; right: 10px; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-family: var(--font-mono); font-size: 12px; font-weight: 500; display: grid; place-items: center; }
+
+/* battle */
+.battle { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.arena, .side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.fighter { display: flex; gap: 14px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+.fighter .glyph { width: 88px; height: 88px; }
+.fighter.foe { margin-right: 36px; }
+.fighter.you { margin-left: 36px; }
+.fighter.down { opacity: .45; transform: translateY(10px) scale(.97); filter: grayscale(1); }
+.fighter.hit { animation: shake .4s; }
+@keyframes shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-7px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
+.fbody { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.fname { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.fname strong { font-size: 18px; }
+.who { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-left: auto; letter-spacing: .1em; }
+.ab { font-size: 12px; line-height: 1.5; color: var(--muted); }
+.bds { display: flex; flex-wrap: wrap; gap: 4px; min-height: 20px; }
+.bd { font-family: var(--font-mono); font-size: 11px; padding: 0 7px; border-radius: 5px; border: 1px solid var(--line); color: var(--muted); }
+.bd.up { color: var(--hp-ok); border-color: var(--hp-ok); }
+.bd.down { color: var(--hp-low); border-color: var(--hp-low); }
+.bd.st { color: var(--t1); border-color: var(--t1); }
+.hp { position: relative; height: 10px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.hp-lag { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 99px; background: color-mix(in srgb, var(--hp-low) 55%, transparent); transition: width 1s ease .35s; }
+.hp-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 99px; transition: width .45s ease; }
+.hp-fill.low { animation: lowpulse 1s ease-in-out infinite; }
+@keyframes lowpulse { 50% { opacity: .55; } }
+.hp-fill.ok { background: var(--hp-ok); } .hp-fill.mid { background: var(--hp-mid); } .hp-fill.low { background: var(--hp-low); }
+.hpnum { font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.pips { display: flex; gap: 5px; }
+.pips i { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--muted); }
+.pips i.on { background: var(--fg); border-color: var(--fg); }
+.turn { font-family: var(--font-mono); font-size: 12px; color: var(--muted); letter-spacing: .1em; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 12px; }
+.moves { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.move { font: inherit; text-align: left; color: var(--fg); background: color-mix(in srgb, var(--c) 8%, var(--panel)); border: 1.5px solid var(--c); border-radius: 10px; padding: 10px 12px; cursor: pointer; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.move:hover:not(:disabled) { background: color-mix(in srgb, var(--c) 18%, var(--panel)); }
+.mn { font-weight: 700; font-size: 14px; line-height: 1.4; }
+.mm { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.mt { font-size: 11px; color: var(--fg); line-height: 1.5; }
+.move em { font-style: normal; font-size: 12px; font-weight: 700; color: var(--muted); }
+.move em.up { color: var(--hp-ok); } .move em.down { color: var(--hp-low); }
+.bench { display: flex; flex-direction: column; gap: 6px; }
+.sw { font: inherit; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; text-align: left; }
+.sw .hp { flex: 1; min-width: 40px; }
+.hint { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.log { font-size: 14px; display: flex; flex-direction: column; gap: 4px; min-height: 9.5em; }
+.log div { color: var(--muted); }
+.log div:last-child { color: var(--fg); font-weight: 700; }
+.result { text-align: center; display: flex; flex-direction: column; gap: 12px; align-items: center; padding: 8px 0; }
+.result h3 { font-family: var(--font-display); font-weight: 400; font-size: 26px; margin: 0; }
+
+.space { border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; font-size: 13px; display: flex; flex-wrap: wrap; gap: 2px 10px; align-items: baseline; color: var(--muted); }
+.space.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--panel)); color: var(--fg); }
+.space b { color: var(--accent); }
+.arena { border-radius: 14px; transition: background .6s; }
+.arena[data-sp="E"] { background-image: linear-gradient(color-mix(in srgb, var(--t2) 16%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--t2) 16%, transparent) 1px, transparent 1px); background-size: 24px 24px; }
+.arena[data-sp="H"] { background-image: repeating-radial-gradient(circle at 50% 50%, transparent 0 22px, color-mix(in srgb, var(--t1) 18%, transparent) 22px 23px); }
+.arena[data-sp="C"] { background-image: linear-gradient(color-mix(in srgb, var(--t3) 30%, transparent), color-mix(in srgb, var(--t3) 30%, transparent)), linear-gradient(color-mix(in srgb, var(--t3) 30%, transparent), color-mix(in srgb, var(--t3) 30%, transparent)); background-size: 1px 100%, 100% 1px; background-position: center, center; background-repeat: no-repeat; }
+.arena[data-sp="P"] { background-image: radial-gradient(color-mix(in srgb, var(--t4) 32%, transparent) 1.5px, transparent 2px); background-size: 16px 16px; }
+.arena[data-sp="L"] { background-image: repeating-linear-gradient(45deg, transparent 0 14px, color-mix(in srgb, var(--t5) 16%, transparent) 14px 15px); }
+.arena[data-sp="J"] { background-image: repeating-conic-gradient(from 0deg at 50% 50%, color-mix(in srgb, var(--t0) 14%, transparent) 0 6deg, transparent 6deg 24deg); }
+.arena[data-sp="T"] { background-image: repeating-radial-gradient(ellipse 60% 30% at 50% 50%, transparent 0 18px, color-mix(in srgb, var(--t3) 18%, transparent) 18px 19px); }
+.banner { position: fixed; top: 22%; left: 50%; transform: translateX(-50%); z-index: 70; pointer-events: none; text-align: center; background: var(--panel); border: 2px solid var(--c); border-radius: 12px; padding: 12px 22px; display: flex; flex-direction: column; gap: 2px; max-width: calc(100vw - 32px); box-shadow: 0 8px 30px color-mix(in srgb, var(--c) 35%, transparent); animation: bannerIn 2.3s ease both; }
+.banner b { font-family: var(--font-display); font-weight: 400; font-size: 26px; color: var(--c); }
+.banner span { font-size: 13px; color: var(--muted); }
+@keyframes bannerIn { 0% { opacity: 0; transform: translateX(-50%) translateY(-24px) scale(.96); } 12% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translateX(-50%) translateY(-8px); } }
+.move:hover:not(:disabled) { transform: translateY(-1px); }
+.lobby { margin-bottom: 12px; }
+.online { display: flex; flex-direction: column; gap: 10px; max-width: 640px; }
+.fld { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 700; }
+.fld textarea { font-family: var(--font-mono); font-size: 11px; line-height: 1.4; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--fg); resize: vertical; word-break: break-all; width: 100%; }
+.steps { margin: 0; padding-left: 1.3em; font-size: 14px; }
+.warn { color: var(--hp-low); font-size: 13px; }
+.moves .move:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.log div:last-child { animation: fadein .3s ease; }
+@keyframes fadein { from { opacity: 0; transform: translateY(3px); } }
+.space em { font-style: normal; font-family: var(--font-mono); font-size: 12px; margin-left: auto; }
+/* dex */
+.dex { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 12px; }
+.entry { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.entry .top { display: flex; gap: 14px; align-items: center; }
+.entry .glyph { width: 96px; height: 96px; }
+.entry .nm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; }
+.entry ul { margin: 0; padding-left: 1.2em; font-size: 13px; display: flex; flex-direction: column; gap: 2px; }
+.entry .note { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.entry .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.upl { display: inline-block; border: 1px solid var(--accent); color: var(--accent); border-radius: 8px; cursor: pointer; font-weight: 700; }
+.upl input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+
+/* plan */
+.doc { max-width: 780px; display: flex; flex-direction: column; gap: 28px; }
+.doc section { display: flex; flex-direction: column; gap: 10px; }
+.doc ol, .doc ul { margin: 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: 4px; }
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { padding: 7px 10px; text-align: center; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-weight: 700; }
+tr:last-child td, tr:last-child th { border-bottom: 0; }
+td.l, th.l { text-align: left; }
+td.w { white-space: normal; text-align: left; min-width: 260px; }
+.cell-up { background: color-mix(in srgb, var(--hp-ok) 22%, transparent); font-weight: 700; }
+.cell-down { background: color-mix(in srgb, var(--hp-low) 16%, transparent); color: var(--muted); }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.formula { font-family: var(--font-mono); font-size: 13px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; overflow-x: auto; white-space: pre; line-height: 1.8; }
+.cycle { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+footer { font-size: 12px; color: var(--muted); }
+
+@media (max-width: 760px) {
+  .battle { grid-template-columns: minmax(0, 1fr); }
+  .fighter.foe { margin-right: 12px; } .fighter.you { margin-left: 12px; }
+  .moves { grid-template-columns: minmax(0, 1fr); }
+  .dex { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) { .fighter.hit, .eye, .fighter .glyph > svg, .hp-fill.low, .banner { animation: none; } .hp-fill, .hp-lag { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <div class="sub">Mathematician Champions · 3 vs 3</div>
+      <h1>数学者チャンピオンズ</h1>
+    </div>
+    <div class="tabs" role="tablist">
+      <button role="tab" data-tab="battle" aria-selected="true">対戦</button>
+      <button role="tab" data-tab="dex" aria-selected="false">図鑑</button>
+      <button role="tab" data-tab="plan" aria-selected="false">企画書</button>
+    </div>
+  </header>
+  <main id="app"></main>
+  <footer>試作版です。実在の人物の写真は使わず、似顔絵風のイラストと業績をモチーフにした紋章で表示しています。</footer>
+</div>
+
+<script>
+const TYPES = ['数論', '代数', '幾何', '解析', '確率', '論理'];
+// 6分野は輪になっている。攻撃側から見て次の2分野に強く(×2)、手前の2分野に弱い(×0.5)。
+function eff(a, d) { const k = (d - a + 6) % 6; return (k === 1 || k === 2) ? 2 : (k === 4 || k === 5) ? 0.5 : 1; }
+
+const AB = {
+  gauss: ['王の風格', '抜群の技のダメージが1.2倍になる。'],
+  ramanujan: ['天啓', 'ひらめきの一撃が出やすい(1/16 → 1/6)。'],
+  euler: ['連続的な成長', 'ターン終了時にHPが1/16回復する。'],
+  riemann: ['臨界線', 'HPが半分以下になると攻撃が1段階上がる(1回だけ)。'],
+  euclid: ['公準', '幾何の技が必ず命中する。'],
+  archimedes: ['てこの原理', '威力65以下の技のダメージが1.5倍になる。'],
+  galois: ['遺された手紙', '倒れたとき、相手に最大HPの1/4のダメージを与える。'],
+  seki: ['秘伝', '抜群で受けるダメージが25%軽くなる。'],
+  pascal: ['期待値', '命中90以下の技が必ず命中する。'],
+  laplace: ['全てお見通し', 'ひらめきの一撃を受けない。'],
+  godel: ['不完全性', '満タンから一撃で倒されるとき、HP1で耐える(1回だけ)。'],
+  turing: ['解読', '技の追加効果が出る確率が2倍。難問にならない。'],
+  fermat: ['余白に収まらない証明', '場に出て3ターン後に攻撃が1段階上がる(1回だけ)。'],
+  noether: ['対称性', '登場時に防御が1段階上がる。'],
+  hypatia: ['学園の灯', '登場時に控えの味方のHPを8%回復する。'],
+  newton: ['万有引力', '登場時に相手の速さを1段階下げる。'],
+  kolmogorov: ['公理的確率', '相手の技や特性で能力を下げられない。'],
+  hilbert: ['23の問題', '登場時に相手の防御を1段階下げる。'],
+  germain: ['ル・ブラン', '最初に受けるダメージが半分になる(1回だけ)。'],
+  abel: ['早世の輝き', 'HPが1/3以下になると攻撃と速さが1段階ずつ上がる(1回だけ)。'],
+  lobachevsky: ['非ユークリッド幾何', '登場時に双曲空間を広げる。'],
+  cauchy: ['複素解析', '登場時に複素数平面を広げる。'],
+  weierstrass: ['厳密性', '相手の技の追加効果(能力ダウン・難問)が出る確率が半分になる。'],
+  cantor: ['濃度の階層', '抜群の技を受けると防御が1段階上がる。'],
+  bayes: ['事後確率', '技を外した次の技が必ず命中する。'],
+  neumann: ['作用素環', '空間が広がるたびに防御が1段階上がる。'],
+  mirzakhani: ['双曲の舞', '双曲空間にいる間、技のダメージが1.5倍になる。'],
+  lagrange: ['最小作用', '空間の効果で技の威力が下がらない。'],
+  boole: ['二値論理', '能力の上昇を反例で打ち消されない。'],
+  dirichlet: ['算術級数', '数論の技を連続で使うたび、ダメージが20%ずつ上がる(最大+40%)。'],
+  grothendieck: ['新しい基礎', '登場時に攻撃と防御が1段階上がるが、速さが1段階下がる。'],
+  poincare: ['予想の解決', '難問にならない。'],
+  kovalevskaya: ['回転する独楽', '技を外すと速さが1段階上がる。'],
+  erdos: ['確率的方法', '命中85以下の技のダメージが1.25倍になる。'],
+  tarski: ['メタ言語', '相手に能力を下げられると、攻撃が1段階上がる。'],
+  brahmagupta: ['ゼロの発見', '登場時に、場にいる両者の能力変化を0に戻す。'],
+  khwarizmi: ['アルゴリズム', '先制技のダメージが1.3倍になる。'],
+  liuhui: ['割円術', '空間が広がっている間、技が必ず命中する。'],
+  shannon: ['情報量', '相手が同じ分野の技を連続で使うと、受けるダメージが3/4になる。']
+};
+
+// 技: [名前, 分野, 威力(0は補助技), 命中, 追加効果]
+// 追加効果: c=発動率(%) self/foe={atk|def|spd:段階} status:'unsolved' drain recoil heal lemma pr(先制)
+const M = [
+  { id: 'gauss', name: 'ガウス', years: '1777–1855', type: 0, hp: 110, atk: 100, def: 85, spd: 80, ab: 'gauss',
+    blurb: '数学の王子。何でもこなす万能型。',
+    note: '少年時代に1から100までの和をすぐに求めた、という逸話が伝わっている。',
+    moves: [['平方剰余の相互法則', 0, 85, 90], ['最小二乗法', 3, 70, 100, { foe: { def: -1 }, c: 30 }], ['正十七角形の作図', 2, 75, 95], ['代数学の基本定理', 1, 80, 90, { self: { atk: 1 }, c: 20 }]] },
+  { id: 'ramanujan', name: 'ラマヌジャン', years: '1887–1920', type: 0, hp: 95, atk: 115, def: 60, spd: 95, ab: 'ramanujan',
+    blurb: '直感で式を見抜く高火力アタッカー。',
+    note: '見舞いに来たハーディが乗ってきたタクシーの番号1729を、2通りの立方数の和で表せる数だと即座に答えた。',
+    moves: [['無限級数の閃き', 3, 80, 95, { self: { spd: 1 }, c: 30 }], ['分割数の漸近式', 0, 90, 85, { recoil: 0.2 }], ['タクシー数1729', 0, 60, 100, { pr: 1 }], ['合同式の直感', 1, 70, 100]] },
+  { id: 'fermat', name: 'フェルマー', years: '1607頃–1665', type: 0, hp: 100, atk: 105, def: 80, spd: 75, ab: 'fermat',
+    blurb: '時間をかけるほど手が付けられなくなる。',
+    note: '「証明を書くには余白が狭すぎる」と書き残した最終定理は、1990年代にワイルズが証明した。',
+    moves: [['無限降下法', 0, 85, 90], ['フェルマーの小定理', 0, 70, 100], ['最終定理', 0, 100, 70, { recoil: 0.15 }], ['光の最短時間の原理', 3, 70, 95, { foe: { spd: -1 }, c: 30 }]] },
+  { id: 'euler', name: 'オイラー', years: '1707–1783', type: 3, hp: 120, atk: 95, def: 90, spd: 75, ab: 'euler',
+    blurb: '技の幅が広く、粘り強い。',
+    note: '晩年に視力を失ったあとも、口述で研究を続けた。',
+    moves: [['オイラーの公式', 3, 90, 90, { self: { atk: 1 }, c: 20 }], ['オイラー積', 0, 75, 100, { drain: 0.5 }], ['多面体定理', 2, 75, 95], ['ケーニヒスベルクの橋', 5, 65, 100, { status: 'unsolved', c: 40 }]] },
+  { id: 'riemann', name: 'リーマン', years: '1826–1866', type: 3, hp: 100, atk: 105, def: 75, spd: 70, ab: 'riemann',
+    blurb: 'ゼータ関数と曲がった空間を操る。',
+    note: '1859年の論文で示した予想は、今もリーマン予想として未解決のまま残っている。',
+    moves: [['ゼータ関数', 0, 85, 90, { foe: { def: -1 }, c: 30 }], ['リーマン積分', 3, 70, 100], ['曲がった空間', 2, 90, 85, { foe: { spd: -1 }, c: 30 }], ['臨界線の嵐', 3, 100, 70, { recoil: 0.25 }]] },
+  { id: 'newton', name: 'ニュートン', years: '1643–1727', type: 3, hp: 110, atk: 105, def: 80, spd: 70, ab: 'newton',
+    blurb: '出てきただけで相手の足を止める。',
+    note: '微積分を創始し、万有引力の法則で天体と地上の運動を同じ式で説明した。',
+    moves: [['流率法', 3, 90, 90], ['万有引力の法則', 2, 85, 90, { foe: { spd: -1 }, c: 20 }], ['二項定理', 1, 70, 100], ['プリンキピア', 5, 75, 95]] },
+  { id: 'euclid', name: 'ユークリッド', years: '紀元前3世紀頃', type: 2, hp: 115, atk: 85, def: 100, spd: 55, ab: 'euclid',
+    blurb: '原論の守り。遅いが固く、幾何技は外さない。',
+    note: '『原論』で、少数の公準から定理を積み上げる方法を体系化した。',
+    moves: [['ユークリッドの互除法', 0, 70, 100, { pr: 1 }], ['平行線公準', 2, 85, 95, { space: 'E' }], ['原論', 5, 80, 100, { self: { def: 1 }, c: 30 }], ['補題', 2, 0, 100, { lemma: 1 }]] },
+  { id: 'archimedes', name: 'アルキメデス', years: '紀元前287頃–212頃', type: 2, hp: 105, atk: 100, def: 80, spd: 75, ab: 'archimedes',
+    blurb: '威力の低い技でも強烈に響く。',
+    note: '浮力の原理に気づいて「分かった」と叫んだ、という入浴の逸話で知られる。',
+    moves: [['取り尽くし法', 3, 80, 95, { foe: { def: -1 }, c: 20 }], ['球と円柱', 2, 65, 100, { space: 'S' }], ['アルキメデスの螺旋', 2, 80, 95, { foe: { spd: -1 }, c: 30 }], ['砂粒の計算', 0, 60, 100, { self: { atk: 1 }, c: 30 }]] },
+  { id: 'hypatia', name: 'ヒュパティア', years: '4世紀後半–415', type: 2, hp: 100, atk: 85, def: 85, spd: 85, ab: 'hypatia',
+    blurb: '仲間を支える教師役。',
+    note: 'アレクサンドリアで数学・天文学・哲学を教えた。円錐曲線や代数の注釈を残したと伝わる。',
+    moves: [['円錐曲線の講義', 2, 80, 95], ['アストロラーベ', 2, 65, 100, { self: { spd: 1 }, c: 30 }], ['代数の注釈', 1, 70, 100], ['天体観測', 3, 75, 95]] },
+  { id: 'galois', name: 'ガロア', years: '1811–1832', type: 1, hp: 80, atk: 125, def: 55, spd: 100, ab: 'galois',
+    blurb: '脆いが、倒れても爪痕を残す。',
+    note: '20歳で決闘に倒れる前夜まで、群論の考えを書き残していた。',
+    moves: [['群論の一撃', 1, 100, 80], ['五次方程式の不可解性', 1, 85, 90, { status: 'unsolved', c: 30 }], ['体の拡大', 0, 70, 100], ['決闘前夜の手紙', 5, 0, 100, { self: { atk: 2 } }]] },
+  { id: 'seki', name: '関孝和', years: '1642頃–1708', type: 1, hp: 105, atk: 95, def: 85, spd: 70, ab: 'seki',
+    blurb: '和算の大家。抜群の技にも動じない。',
+    note: '江戸時代の和算家で、行列式の考え方をヨーロッパとほぼ同じ時期に独自に見つけた。',
+    moves: [['行列式', 1, 80, 95, { foe: { def: -1 }, c: 30 }], ['方程式の消去法', 1, 70, 100], ['円理', 3, 80, 90, { self: { atk: 1 }, c: 20 }], ['ベルヌーイ数', 0, 70, 100, { status: 'unsolved', c: 30 }]] },
+  { id: 'noether', name: 'ネーター', years: '1882–1935', type: 1, hp: 105, atk: 95, def: 95, spd: 70, ab: 'noether',
+    blurb: '登場した時点で固い。',
+    note: '抽象代数学を大きく進め、対称性と保存則を結びつけるネーターの定理でも知られる。',
+    moves: [['ネーターの定理', 3, 80, 95], ['イデアル論', 1, 80, 95, { foe: { def: -1 }, c: 30 }], ['昇鎖条件', 1, 70, 100, { self: { def: 1 }, c: 40 }], ['位相的な視点', 2, 70, 100]] },
+  { id: 'pascal', name: 'パスカル', years: '1623–1662', type: 4, hp: 100, atk: 90, def: 80, spd: 85, ab: 'pascal',
+    blurb: '賭けの問題は外さない。',
+    note: 'フェルマーとの手紙のやり取りで確率論の基礎を築き、歯車式の計算機も作った。',
+    moves: [['賭けの問題', 4, 85, 90, { status: 'unsolved', c: 30 }], ['パスカルの三角形', 0, 70, 100], ['円錐曲線の定理', 2, 80, 95, { foe: { spd: -1 }, c: 20 }], ['計算機パスカリーヌ', 5, 65, 100, { self: { spd: 1 }, c: 30 }]] },
+  { id: 'laplace', name: 'ラプラス', years: '1749–1827', type: 4, hp: 110, atk: 90, def: 85, spd: 70, ab: 'laplace',
+    blurb: '確率と解析を扱う安定型。運任せの攻撃を受けない。',
+    note: '宇宙の全てを知る存在を想定した「ラプラスの悪魔」の思考実験で知られる。',
+    moves: [['確率の解析的理論', 4, 85, 90], ['ラプラス方程式', 3, 80, 95, { foe: { def: -1 }, c: 30 }], ['ラプラスの悪魔', 5, 75, 90, { foe: { spd: -1 }, c: 40 }], ['中心極限定理', 4, 90, 85, { self: { def: 1 }, c: 30 }]] },
+  { id: 'kolmogorov', name: 'コルモゴロフ', years: '1903–1987', type: 4, hp: 105, atk: 100, def: 85, spd: 65, ab: 'kolmogorov',
+    blurb: '能力を下げる攻撃が通じない。',
+    note: '1933年に確率論を公理から組み立て直し、現在の確率論の土台を作った。',
+    moves: [['確率の公理化', 4, 90, 90, { space: 'P' }], ['大数の法則', 4, 70, 100, { self: { def: 1 }, c: 30 }], ['乱流の理論', 3, 75, 95], ['計算量の複雑さ', 5, 70, 100, { foe: { spd: -1 }, c: 30 }]] },
+  { id: 'godel', name: 'ゲーデル', years: '1906–1978', type: 5, hp: 95, atk: 110, def: 80, spd: 65, ab: 'godel',
+    blurb: '一度だけ必ず耐える。証明できない真理を突きつける。',
+    note: '1931年に不完全性定理を示し、形式的な体系では証明も反証もできない命題が残ることを明らかにした。',
+    moves: [['不完全性定理', 5, 95, 85, { status: 'unsolved', c: 40 }], ['ゲーデル数', 0, 70, 100], ['反例の提示', 5, 0, 100, { clear: 1 }], ['集合の濃度', 3, 65, 100, { foe: { atk: -1 }, c: 30 }]] },
+  { id: 'turing', name: 'チューリング', years: '1912–1954', type: 5, hp: 100, atk: 105, def: 70, spd: 90, ab: 'turing',
+    blurb: '追加効果が決まりやすく、難問にもならない。',
+    note: '計算の限界を示し、第二次世界大戦中にはエニグマ暗号の解読に貢献した。',
+    moves: [['停止性問題', 5, 90, 85, { status: 'unsolved', c: 40 }], ['エニグマ解読', 4, 80, 95, { foe: { atk: -1 }, c: 30 }], ['反応拡散方程式', 3, 75, 95, { drain: 0.4 }], ['チューリングマシン', 5, 70, 100, { self: { spd: 1 }, c: 30 }]] },
+  { id: 'hilbert', name: 'ヒルベルト', years: '1862–1943', type: 5, hp: 105, atk: 100, def: 85, spd: 70, ab: 'hilbert',
+    blurb: '登場時に相手の守りを崩す。',
+    note: '1900年のパリの講演で、20世紀の数学が取り組むべき23の問題を挙げた。',
+    moves: [['形式主義', 5, 85, 90], ['ヒルベルト空間', 3, 80, 95, { space: 'L' }], ['基底定理', 1, 75, 95], ['ヒルベルトのホテル', 5, 0, 100, { heal: 0.5 }]] },
+  { id: 'germain', name: 'ジェルマン', years: '1776–1831', type: 0, hp: 100, atk: 95, def: 85, spd: 85, ab: 'germain',
+    blurb: '初撃をしのぎ、そこから数論で押す。',
+    note: '女性であることを理由に学問の場を閉ざされ、男性名のル・ブランを名乗ってガウスらと手紙を交わした。フェルマーの最終定理にも先駆的な結果を残した。',
+    moves: [['ジェルマン素数', 0, 80, 95], ['最終定理への一歩', 0, 85, 90, { foe: { def: -1 }, c: 30 }], ['弾性体の振動', 3, 75, 95], ['ル・ブランの手紙', 5, 65, 100, { self: { def: 1 }, c: 40 }]] },
+  { id: 'abel', name: 'アーベル', years: '1802–1829', type: 1, hp: 90, atk: 115, def: 65, spd: 95, ab: 'abel',
+    blurb: '追い込まれてからが本番の速攻型。',
+    note: '五次方程式が代数的に解けないことを証明したが、26歳で亡くなった。',
+    moves: [['アーベル–ルフィニの定理', 1, 90, 90], ['アーベル群', 1, 70, 100], ['楕円関数', 3, 80, 95], ['二項級数の収束', 3, 65, 100, { self: { spd: 1 }, c: 30 }]] },
+  { id: 'lobachevsky', name: 'ロバチェフスキー', years: '1792–1856', type: 2, hp: 105, atk: 95, def: 85, spd: 70, ab: 'lobachevsky',
+    blurb: '登場すると世界が曲がる。',
+    note: 'ユークリッドの平行線公準を認めない幾何学(双曲幾何)を発表した。ボヤイも独立に同じ結論に達している。',
+    moves: [['双曲幾何', 2, 85, 90, { space: 'H' }], ['平行線公準の否定', 5, 75, 95], ['角の欠損', 2, 70, 100], ['三角級数', 3, 70, 100, { foe: { spd: -1 }, c: 20 }]] },
+  { id: 'cauchy', name: 'コーシー', years: '1789–1857', type: 3, hp: 105, atk: 100, def: 85, spd: 70, ab: 'cauchy',
+    blurb: '複素数平面を広げて解析技を強める。',
+    note: '複素関数論を発展させ、極限や連続を厳密な言葉で定義し直した。',
+    moves: [['コーシーの積分定理', 3, 90, 90, { space: 'C' }], ['留数定理', 3, 80, 95], ['イプシロン–デルタ論法', 5, 75, 95, { foe: { def: -1 }, c: 30 }], ['置換群', 1, 70, 100]] },
+  { id: 'weierstrass', name: 'ワイエルシュトラス', years: '1815–1897', type: 3, hp: 105, atk: 95, def: 90, spd: 65, ab: 'weierstrass',
+    blurb: '強化も追加効果も通さない厳密屋。',
+    note: '至る所連続なのにどこでも微分できない関数を示し、直感に頼らない解析学の基礎を固めた。',
+    moves: [['微分できない連続関数', 3, 80, 95, { clear: 1 }], ['一様収束', 3, 75, 95], ['有界列の収束', 3, 70, 100, { self: { def: 1 }, c: 40 }], ['反例', 5, 0, 100, { clear: 1 }]] },
+  { id: 'cantor', name: 'カントール', years: '1845–1918', type: 5, hp: 100, atk: 105, def: 80, spd: 70, ab: 'cantor',
+    blurb: '抜群を受けるほど固くなる。',
+    note: '無限集合にも大きさの違いがあることを、対角線論法で示した。',
+    moves: [['対角線論法', 5, 85, 90, { clear: 1 }], ['集合論', 5, 75, 95], ['実数の非可算性', 3, 80, 95], ['超限数', 0, 70, 100, { self: { atk: 1 }, c: 30 }]] },
+  { id: 'bayes', name: 'ベイズ', years: '1701頃–1761', type: 4, hp: 100, atk: 95, def: 80, spd: 85, ab: 'bayes',
+    blurb: '外してもすぐ取り返す。',
+    note: '死後に友人が発表した論文に、観測から原因の確率を更新する考え方(ベイズの定理)が含まれていた。',
+    moves: [['ベイズの定理', 4, 85, 90], ['逆確率', 4, 75, 95], ['事前分布', 5, 65, 100, { self: { atk: 1 }, c: 40 }], ['不確実性の推定', 3, 70, 100]] },
+  { id: 'neumann', name: 'フォン・ノイマン', years: '1903–1957', type: 4, hp: 105, atk: 100, def: 80, spd: 80, ab: 'neumann',
+    blurb: '空間が変わるたびに固くなる。',
+    note: 'ゲーム理論のミニマックス定理を示し、量子力学の数学的な基礎や、現在のコンピュータにつながる設計(プログラム内蔵方式)にも関わった。',
+    moves: [['ミニマックス定理', 4, 85, 90], ['ゲーム理論', 4, 75, 95, { foe: { atk: -1 }, c: 30 }], ['作用素環', 3, 80, 95], ['プログラム内蔵方式', 5, 70, 100, { self: { spd: 1 }, c: 30 }]] },
+  { id: 'mirzakhani', name: 'ミルザハニ', years: '1977–2017', type: 2, hp: 100, atk: 105, def: 80, spd: 80, ab: 'mirzakhani',
+    blurb: '双曲空間で本領を発揮する。',
+    note: 'イランに生まれ、曲面上の閉じた測地線の数え上げなどを研究した。2014年に女性として初めてフィールズ賞を受賞した。',
+    moves: [['モジュライ空間', 2, 85, 90], ['閉測地線の数え上げ', 2, 80, 95], ['リーマン面の変形', 3, 75, 95], ['双曲面の分解', 2, 70, 100, { space: 'H' }]] },
+  { id: 'lagrange', name: 'ラグランジュ', years: '1736–1813', type: 3, hp: 105, atk: 95, def: 90, spd: 70, ab: 'lagrange',
+    blurb: '空間の逆風を受けない。',
+    note: '解析力学を整え、方程式の解法を置換の視点から調べて、のちの群論への道を開いた。',
+    moves: [['未定乗数法', 3, 85, 90], ['ラグランジュの定理', 1, 75, 95], ['四平方定理', 0, 75, 95], ['変分法', 3, 70, 100, { self: { def: 1 }, c: 40 }]] },
+  { id: 'boole', name: 'ブール', years: '1815–1864', type: 5, hp: 100, atk: 100, def: 85, spd: 70, ab: 'boole',
+    blurb: '強化を消されない。背理法で場を整える。',
+    note: '論理を代数の形で書き表し、真と偽の二値で扱うブール代数を築いた。現代のコンピュータの回路設計の土台になっている。',
+    moves: [['ブール代数', 5, 85, 90], ['論理式の計算', 1, 75, 95], ['思考の法則', 5, 75, 95, { self: { atk: 1 }, c: 30 }], ['背理法', 5, 0, 100, { clear: 2 }]] },
+  { id: 'dirichlet', name: 'ディリクレ', years: '1805–1859', type: 0, hp: 100, atk: 100, def: 80, spd: 75, ab: 'dirichlet',
+    blurb: '数論の技を続けるほど重くなる。',
+    note: '等差数列には素数が無限に含まれることを示した。関数を「対応」としてとらえる現代的な定義を広めた一人でもある。',
+    moves: [['鳩の巣原理', 0, 80, 95], ['ディリクレのL関数', 0, 85, 90], ['算術級数定理', 0, 90, 85, { recoil: 0.15 }], ['ディリクレ境界条件', 3, 75, 95, { foe: { def: -1 }, c: 30 }], ['ディリクレ関数', 3, 0, 100, { guard: 1, pr: 2 }]] },
+  { id: 'grothendieck', name: 'グロタンディーク', years: '1928–2014', type: 1, hp: 105, atk: 105, def: 80, spd: 65, ab: 'grothendieck',
+    blurb: '登場時に自分を作り替える。遅いが重い。',
+    note: 'スキーム理論やトポスを導入して代数幾何を組み替えた。1970年代には数学界から距離を置いた。',
+    moves: [['スキーム理論', 1, 90, 90], ['射影スキーム', 2, 75, 95, { space: 'J' }], ['トポス', 5, 75, 95, { self: { def: 1 }, c: 40 }], ['モチーフ', 1, 70, 100, { self: { atk: 1 }, c: 30 }], ['エタール・コホモロジー', 1, 80, 95, { foe: { atk: -1 }, c: 30 }]] },
+  { id: 'poincare', name: 'ポアンカレ', years: '1854–1912', type: 2, hp: 105, atk: 100, def: 85, spd: 70, ab: 'poincare',
+    blurb: '難問に取り憑かれない幾何の達人。',
+    note: '位相幾何学の基礎を築いた。1904年に提示した予想は、2000年代にペレルマンが解決した。',
+    moves: [['ポアンカレ予想', 2, 95, 85], ['トポロジーの創始', 2, 75, 95, { space: 'T' }], ['三体問題', 3, 80, 95], ['ポアンカレ・ホモロジー', 1, 70, 100, { foe: { spd: -1 }, c: 30 }], ['回帰定理', 4, 70, 100, { self: { def: 1 }, c: 30 }]] },
+  { id: 'kovalevskaya', name: 'コワレフスカヤ', years: '1850–1891', type: 3, hp: 95, atk: 105, def: 75, spd: 85, ab: 'kovalevskaya',
+    blurb: '外しても勢いが落ちない。',
+    note: '偏微分方程式の存在定理や、剛体の回転運動で成果を上げた。ストックホルム大学で教授職に就いた。',
+    moves: [['コワレフスカヤの独楽', 3, 85, 90], ['コーシー・コワレフスカヤの定理', 3, 80, 95], ['土星の環の研究', 3, 70, 100, { foe: { spd: -1 }, c: 30 }], ['アーベル積分', 1, 75, 95], ['偏微分方程式', 3, 90, 85, { spw: 1 }]] },
+  { id: 'erdos', name: 'エルデシュ', years: '1913–1996', type: 4, hp: 100, atk: 100, def: 75, spd: 85, ab: 'erdos',
+    blurb: '当たりにくい技ほど強烈。',
+    note: '生涯に1500編を超える論文を、数百人の共同研究者と書いた。確率的方法で組合せ論を切り開いた。',
+    moves: [['確率的方法', 4, 85, 90], ['ラムゼー理論', 5, 75, 95], ['素数定理の初等的証明', 0, 80, 95], ['エルデシュ数', 4, 70, 100, { multi: 2 }], ['コーヒーと定理', 4, 0, 100, { self: { atk: 1, spd: 1 } }]] },
+  { id: 'tarski', name: 'タルスキ', years: '1901–1983', type: 5, hp: 100, atk: 100, def: 80, spd: 70, ab: 'tarski',
+    blurb: '下げられるほど攻撃が研ぎ澄まされる。',
+    note: '形式言語における「真理」を数学的に定義し、モデル理論の土台を作った。',
+    moves: [['真理の定義', 5, 85, 90], ['バナッハ・タルスキーのパラドックス', 2, 95, 80], ['モデル理論', 5, 75, 95], ['決定可能性', 5, 70, 100, { foe: { atk: -1 }, c: 30 }], ['タルスキの公理', 2, 70, 100]] },
+  { id: 'brahmagupta', name: 'ブラーマグプタ', years: '598頃–668頃', type: 0, hp: 100, atk: 100, def: 80, spd: 75, ab: 'brahmagupta',
+    blurb: '登場すると場の強化をゼロに戻す。',
+    note: '628年の著作で、ゼロを数として扱う規則や、負の数の計算規則を書いた。',
+    moves: [['ゼロの算術', 0, 85, 90], ['ブラーマグプタの公式', 2, 80, 95], ['ペル方程式', 0, 90, 85, { recoil: 0.15 }], ['負の数の規則', 1, 70, 100, { foe: { atk: -1 }, c: 30 }], ['円に内接する四角形', 2, 70, 100, { multi: 2 }]] },
+  { id: 'khwarizmi', name: 'アル＝フワーリズミー', years: '780頃–850頃', type: 1, hp: 100, atk: 95, def: 85, spd: 80, ab: 'khwarizmi',
+    blurb: '先制技で手順よく削る。',
+    note: '9世紀のバグダッドで方程式の解き方を体系化した。「代数(algebra)」と「アルゴリズム」の語源になった人物とされる。',
+    moves: [['代数の書', 1, 85, 90], ['二次方程式の解法', 1, 80, 95, { foe: { def: -1 }, c: 30 }], ['アルゴリズム', 5, 70, 100, { pr: 1 }], ['十進位取り記数法', 0, 70, 100, { self: { atk: 1 }, c: 30 }], ['平方完成', 2, 75, 95, { pr: 1 }]] },
+  { id: 'liuhui', name: '劉徽', years: '3世紀頃', type: 2, hp: 105, atk: 95, def: 85, spd: 70, ab: 'liuhui',
+    blurb: '空間の中では外さない。',
+    note: '3世紀の中国で『九章算術』に注釈をつけ、割円術(円に内接する正多角形で円周を近似する方法)で円周率を求めた。',
+    moves: [['割円術', 2, 85, 90], ['円周率3.1416', 2, 70, 100], ['九章算術注', 1, 75, 95], ['出入相補の原理', 2, 0, 100, { guard: 1, pr: 2 }], ['陽馬の体積', 2, 80, 95, { spw: 1 }]] },
+  { id: 'shannon', name: 'シャノン', years: '1916–2001', type: 4, hp: 100, atk: 100, def: 75, spd: 85, ab: 'shannon',
+    blurb: '同じ手の繰り返しを読み切る。',
+    note: '1948年の論文で情報量(エントロピー)を定義し、情報理論を作った。修士論文では、ブール代数が電気回路の設計に使えることを示した。',
+    moves: [['情報エントロピー', 4, 85, 90], ['符号化定理', 5, 80, 95], ['ブール代数と回路', 5, 70, 100, { self: { spd: 1 }, c: 30 }], ['標本化定理', 3, 75, 95, { foe: { spd: -1 }, c: 30 }], ['通信路容量', 4, 75, 95, { spw: 1 }]] }
+];
+// 5つ目の技。守る(guard)・2回攻撃(multi)・空間連動(spw)など新しい効果を含む。
+const EXTRA = {
+  gauss: ['ガウス曲率', 2, 80, 95, { spw: 1 }],
+  ramanujan: ['モック・テータ関数', 3, 70, 100, { multi: 2 }],
+  fermat: ['余白の証明', 0, 0, 100, { guard: 1, pr: 2 }],
+  euler: ['バーゼル問題', 3, 70, 100, { multi: 2 }],
+  riemann: ['リーマン球面', 2, 75, 95, { spw: 1 }],
+  newton: ['光のスペクトル', 3, 70, 100, { multi: 2 }],
+  euclid: ['公理の砦', 2, 0, 100, { guard: 1, pr: 2 }],
+  archimedes: ['アルキメデスの原理', 2, 0, 100, { guard: 1, pr: 2 }],
+  hypatia: ['学園の講義', 2, 0, 100, { heal: 0.3 }],
+  galois: ['ガロア理論', 1, 80, 95, { spw: 1 }],
+  seki: ['算木', 1, 0, 100, { guard: 1, pr: 2 }],
+  noether: ['ネーター環', 1, 0, 100, { guard: 1, pr: 2 }],
+  pascal: ['パスカルの原理', 4, 70, 100, { multi: 2 }],
+  laplace: ['ラプラス変換', 3, 80, 95, { spw: 1 }],
+  kolmogorov: ['確率過程', 4, 75, 95, { spw: 1 }],
+  godel: ['ゲーデルの宇宙', 5, 80, 95, { spw: 1 }],
+  turing: ['チューリングテスト', 5, 70, 100, { multi: 2 }],
+  hilbert: ['公理主義', 5, 0, 100, { guard: 1, pr: 2 }],
+  germain: ['ジェルマンの定理', 0, 70, 100, { multi: 2 }],
+  abel: ['アーベルの不可能性', 1, 85, 90, { spw: 1 }],
+  lobachevsky: ['双曲三角形', 2, 70, 100, { multi: 2 }],
+  cauchy: ['コーシー列', 3, 70, 100, { multi: 2 }],
+  weierstrass: ['ワイエルシュトラス関数', 3, 0, 100, { guard: 1, pr: 2 }],
+  cantor: ['カントール集合', 5, 70, 100, { multi: 2 }],
+  bayes: ['ベイズ更新', 4, 80, 95, { spw: 1 }],
+  neumann: ['ノイマン代数', 3, 80, 95, { spw: 1 }],
+  mirzakhani: ['タイヒミュラー空間', 2, 80, 95, { spw: 1 }],
+  lagrange: ['ラグランジュ点', 3, 0, 100, { guard: 1, pr: 2 }],
+  boole: ['ブールの不等式', 5, 70, 100, { multi: 2 }]
+};
+M.forEach(m => { if (EXTRA[m.id]) m.moves.push(EXTRA[m.id]); });
+const byId = Object.fromEntries(M.map(m => [m.id, m]));
+const LS = { atk: '攻撃', def: '防御', spd: '速さ' };
+// 空間: 技の分野ごとに威力が変わる。up=×1.3 down=×0.8。5ターン続く。
+const SP = {
+  E: { name: 'ユークリッド空間', up: [2, 0], down: [3], desc: '幾何・数論の技が1.3倍、解析の技が0.8倍。' },
+  H: { name: '双曲空間', up: [1, 5], down: [0], desc: '代数・論理の技が1.3倍、数論の技が0.8倍。' },
+  C: { name: '複素数平面', up: [3, 4], down: [5], desc: '解析・確率の技が1.3倍、論理の技が0.8倍。' },
+  P: { name: '確率空間', up: [4, 5], down: [2], desc: '確率・論理の技が1.3倍、幾何の技が0.8倍。' },
+  L: { name: 'ヒルベルト空間', up: [3, 1], down: [4], desc: '解析・代数の技が1.3倍、確率の技が0.8倍。' },
+  J: { name: '射影平面', up: [1, 2], down: [4], desc: '代数・幾何の技が1.3倍、確率の技が0.8倍。' },
+  T: { name: 'トーラス', up: [0, 3], down: [1], desc: '数論・解析の技が1.3倍、代数の技が0.8倍。' },
+  S: { name: '球面', up: [2, 3], down: [1], desc: '幾何・解析の技が1.3倍、代数の技が0.8倍。' }
+};
+const SPCOL = { E: 2, H: 1, C: 3, P: 4, L: 5, J: 0, T: 3, S: 2 };
+const SPACE_TURNS = 5;
+const chip = t => `<span class="chip" style="--c:var(--t${t})">${TYPES[t]}</span>`;
+
+/* ---------- 紋章 ---------- */
+function emblem(m) {
+  const P = (x, y) => `${x.toFixed(1)},${y.toFixed(1)}`;
+  let s = '';
+  switch (m.id) {
+    case 'gauss': s = '<path d="M4 38C14 38 16 10 24 10S34 38 44 38"/><path d="M4 41H44" stroke-width="1.4"/>'; break;
+    case 'ramanujan': s = '<path d="M24 24C28 12 42 14 42 24C42 34 28 36 24 24C20 12 6 14 6 24C6 34 20 36 24 24Z"/>'; break;
+    case 'fermat': s = '<circle cx="24" cy="24" r="18" stroke-width="1.4"/><text x="24" y="31" text-anchor="middle" font-family="DM Mono, monospace" font-size="20" fill="currentColor" stroke="none">xⁿ</text>'; break;
+    case 'euler': s = '<circle cx="24" cy="24" r="16"/><path d="M8 24H40M24 8V40" stroke-width="1" opacity=".5"/><path d="M24 24L36 13"/><circle cx="36" cy="13" r="2.6" fill="currentColor"/>'; break;
+    case 'riemann': s = '<path d="M16 6V42M32 6V42" stroke-dasharray="3 3" stroke-width="1.4"/><path d="M24 4V44" stroke-width="1.2" opacity=".5"/>' + [10, 19, 29, 38].map(y => `<circle cx="24" cy="${y}" r="2.6" fill="currentColor"/>`).join(''); break;
+    case 'newton': s = '<path d="M17 34L24 12L31 34Z"/><path d="M4 28L19 26M29 22L44 14M29 26L44 24M29 30L44 34" stroke-width="1.6"/>'; break;
+    case 'euclid': s = '<path d="M24 6L42 38H6Z"/><circle cx="24" cy="29" r="7"/>'; break;
+    case 'archimedes': { const pts = []; for (let t = 0; t < 12.6; t += 0.3) pts.push(P(24 + 1.6 * t * Math.cos(t), 24 + 1.6 * t * Math.sin(t))); s = `<polyline points="${pts.join(' ')}"/>`; break; }
+    case 'hypatia': s = '<circle cx="24" cy="24" r="17"/><circle cx="24" cy="24" r="8"/><path d="M24 7V13M24 35V41M7 24H13M35 24H41M24 24L34 14"/>'; break;
+    case 'galois': { const q = [0, 1, 2, 3, 4].map(i => [24 + 18 * Math.cos(-Math.PI / 2 + i * 2 * Math.PI / 5), 24 + 18 * Math.sin(-Math.PI / 2 + i * 2 * Math.PI / 5)]); s = `<polygon points="${[0, 2, 4, 1, 3].map(i => P(...q[i])).join(' ')}"/>` + q.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.6" fill="currentColor"/>`).join(''); break; }
+    case 'seki': s = '<path d="M16 8H11V40H16M32 8H37V40H32"/>' + [[20, 18], [28, 18], [20, 30], [28, 30]].map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="2.6" fill="currentColor" stroke="none"/>`).join(''); break;
+    case 'noether': s = '<path d="M24 6V42" stroke-dasharray="3 3" stroke-width="1.4"/><path d="M20 14L8 24L20 34Z"/><path d="M28 14L40 24L28 34Z"/>'; break;
+    case 'pascal': for (let r = 0; r < 4; r++) for (let k = 0; k <= r; k++) s += `<circle cx="${24 + (k - r / 2) * 10}" cy="${10 + r * 10}" r="2.8" fill="currentColor" stroke="none"/>`; break;
+    case 'laplace': s = '<circle cx="24" cy="24" r="3" fill="currentColor"/><circle cx="24" cy="24" r="10" stroke-dasharray="3 3"/><circle cx="24" cy="24" r="18" stroke-dasharray="3 3"/>'; break;
+    case 'kolmogorov': s = '<rect x="7" y="9" width="34" height="30" rx="2"/><path d="M24 9V39M7 24H41" stroke-width="1"/><circle cx="32" cy="17" r="4" fill="currentColor"/>'; break;
+    case 'godel': s = '<path d="M14 10V38M14 24H36M32 14L18 36"/>'; break;
+    case 'turing': s = [6, 15, 24, 33].map(x => `<rect x="${x}" y="28" width="9" height="9"/>`).join('') + '<path d="M28.5 10L23.5 21H33.5Z" fill="currentColor"/>'; break;
+    case 'brahmagupta': s = '<circle cx="24" cy="24" r="16"/><circle cx="24" cy="24" r="3.4" fill="currentColor" stroke="none"/>'; break;
+    case 'khwarizmi': s = '<path d="M8 12H40M8 24H30M8 36H20"/><path d="M34 19L40 24L34 29"/>'; break;
+    case 'liuhui': s = '<circle cx="24" cy="24" r="17"/><polygon points="24,7 38.7,15.5 38.7,32.5 24,41 9.3,32.5 9.3,15.5"/>'; break;
+    case 'shannon': s = '<path d="M5 32H13V16H21V32H29V16H37V32H43"/>'; break;
+    case 'dirichlet': s = '<rect x="7" y="9" width="34" height="30" rx="2"/><path d="M18 9V39M30 9V39M7 24H41" stroke-width="1.4"/><circle cx="12" cy="16" r="2.4" fill="currentColor" stroke="none"/><circle cx="24" cy="16" r="2.4" fill="currentColor" stroke="none"/><circle cx="36" cy="16" r="2.4" fill="currentColor" stroke="none"/><circle cx="24" cy="31" r="2.4" fill="currentColor" stroke="none"/>'; break;
+    case 'grothendieck': s = '<path d="M6 16Q12 10 18 16T30 16T42 16M6 26Q12 20 18 26T30 26T42 26M6 36Q12 30 18 36T30 36T42 36"/>'; break;
+    case 'poincare': s = '<ellipse cx="24" cy="24" rx="18" ry="11"/><path d="M13 24C18 30 30 30 35 24M16 22C20 17 28 17 32 22"/>'; break;
+    case 'kovalevskaya': s = '<path d="M24 41L15 19H33Z"/><path d="M10 14H38M24 6V14"/>'; break;
+    case 'erdos': s = '<path d="M10 12L24 24L38 12M24 24V40M10 12L10 34M38 12L38 34" stroke-width="1.6"/><circle cx="10" cy="12" r="3.4" fill="currentColor"/><circle cx="38" cy="12" r="3.4" fill="currentColor"/><circle cx="24" cy="24" r="3.4" fill="currentColor"/><circle cx="24" cy="40" r="3.4" fill="currentColor"/><circle cx="10" cy="34" r="3.4" fill="currentColor"/><circle cx="38" cy="34" r="3.4" fill="currentColor"/>'; break;
+    case 'tarski': s = '<path d="M10 10H38M24 10V38"/><path d="M12 40H36" stroke-dasharray="3 3"/>'; break;
+    case 'neumann': s = '<path d="M6 30C16 14 32 14 42 30"/><path d="M6 18C16 34 32 34 42 18"/><circle cx="24" cy="24" r="2.6" fill="currentColor"/>'; break;
+    case 'mirzakhani': s = '<path d="M8 24C8 10 40 10 40 24C40 38 8 38 8 24Z"/><circle cx="18" cy="24" r="4"/><circle cx="30" cy="24" r="4"/>'; break;
+    case 'lagrange': s = '<path d="M6 38C14 6 34 6 42 38"/><path d="M6 38H42" stroke-width="1.4"/><circle cx="24" cy="14" r="2.8" fill="currentColor"/>'; break;
+    case 'boole': s = '<path d="M12 10H24A14 14 0 0 1 24 38H12Z"/><path d="M4 18H12M4 30H12M38 24H44"/>'; break;
+    case 'germain': s = '<circle cx="24" cy="24" r="17"/><path d="M24 7V41M7 24H41" stroke-dasharray="3 3" stroke-width="1.4"/><circle cx="24" cy="24" r="7"/>'; break;
+    case 'abel': s = '<path d="M38 24A14 14 0 1 1 24 10"/><path d="M24 4L33 10L24 16Z" fill="currentColor"/>'; break;
+    case 'lobachevsky': s = '<circle cx="24" cy="24" r="18"/><path d="M13 9Q26 24 13 39M35 9Q22 24 35 39M6 24H42" stroke-width="1.6"/>'; break;
+    case 'cauchy': s = '<path d="M6 24H42M24 6V42" stroke-width="1" opacity=".5"/><path d="M24 12C36 12 36 36 24 36C12 36 12 12 24 12Z"/><circle cx="24" cy="24" r="2.4" fill="currentColor"/>'; break;
+    case 'weierstrass': s = '<polyline points="6,30 11,18 16,34 20,14 25,32 29,20 33,30 37,16 42,26"/>'; break;
+    case 'cantor': s = '<path d="M6 12H42M6 22H18M30 22H42M6 32H10M14 32H18M30 32H34M38 32H42" stroke-width="3.2"/>'; break;
+    case 'bayes': s = '<circle cx="18" cy="24" r="12"/><circle cx="30" cy="24" r="12"/>'; break;
+    case 'hilbert': { const H = [[0, 0], [1, 0], [1, 1], [0, 1], [0, 2], [0, 3], [1, 3], [1, 2], [2, 2], [2, 3], [3, 3], [3, 2], [3, 1], [2, 1], [2, 0], [3, 0]]; s = `<polyline points="${H.map(p => P(7 + 11.3 * p[0], 7 + 11.3 * p[1])).join(' ')}"/>`; break; }
+  }
+  return `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${s}</svg>`;
+}
+/* ---------- 似顔絵風イラスト ---------- */
+// [肌, 髪色, 髪型, ひげ, 小物]  肌 l/m/t/d  髪色 k黒 b茶 g灰 w白  髪型 bald/tufts/short/side/curly/wig/long/bun  ひげ n/must/short/long/goat
+const SK = { l: '#f3d6bd', m: '#e0b48e', t: '#c58f62', d: '#8c5a3c' };
+const HC = { k: '#2a2320', b: '#6a4a2f', g: '#a9a39a', w: '#eee9df' };
+const LOOK = {
+  gauss: ['l', 'b', 'side', 'n', 'cravat'], ramanujan: ['d', 'k', 'short', 'n', 'collar'], fermat: ['l', 'b', 'wig', 'must', 'collar'],
+  euler: ['l', 'w', 'wig', 'n', 'cravat'], riemann: ['l', 'k', 'short', 'short', 'glass'], newton: ['l', 'g', 'long', 'n', 'cravat'],
+  euclid: ['l', 'g', 'tufts', 'long', 'toga'], archimedes: ['m', 'g', 'curly', 'short', 'toga'], hypatia: ['m', 'k', 'bun', 'n', 'laurel+toga'],
+  galois: ['l', 'k', 'curly', 'n', 'collar'], seki: ['t', 'k', 'bun', 'n', 'collar'], noether: ['l', 'k', 'short', 'n', 'glass+collar'],
+  pascal: ['l', 'b', 'long', 'n', 'cravat'], laplace: ['l', 'w', 'wig', 'n', 'cravat'], kolmogorov: ['l', 'g', 'tufts', 'n', 'glass'],
+  godel: ['l', 'k', 'side', 'n', 'glass+collar'], turing: ['l', 'k', 'side', 'n', 'collar'], hilbert: ['l', 'g', 'bald', 'goat', 'collar'],
+  germain: ['l', 'b', 'bun', 'n', 'collar'], abel: ['l', 'b', 'long', 'n', 'cravat'], lobachevsky: ['l', 'g', 'bald', 'short', 'collar'],
+  cauchy: ['l', 'k', 'side', 'n', 'cravat'], weierstrass: ['l', 'w', 'bald', 'short', 'glass'], cantor: ['l', 'g', 'side', 'must', 'collar'],
+  bayes: ['l', 'w', 'wig', 'n', 'collar'], neumann: ['l', 'k', 'short', 'n', 'cravat'], mirzakhani: ['t', 'k', 'short', 'n', 'collar'],
+  lagrange: ['l', 'w', 'wig', 'n', 'cravat'], boole: ['l', 'k', 'side', 'n', 'cravat'], dirichlet: ['l', 'k', 'side', 'n', 'cravat'],
+  grothendieck: ['l', 'g', 'bald', 'short', 'n'], poincare: ['l', 'b', 'short', 'long', 'glass+collar'], kovalevskaya: ['l', 'k', 'bun', 'n', 'collar'],
+  erdos: ['l', 'w', 'side', 'n', 'collar'], tarski: ['l', 'g', 'tufts', 'n', 'glass+collar'],
+  brahmagupta: ['t', 'k', 'short', 'must', 'toga'], khwarizmi: ['m', 'k', 'short', 'short', 'collar'],
+  liuhui: ['l', 'k', 'bun', 'short', 'collar'], shannon: ['l', 'b', 'side', 'n', 'glass+cravat']
+};
+function hash(s) { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; }
+function portrait(m) {
+  const lk = LOOK[m.id] || ['l', 'k', 'short', 'n', 'n'];
+  const sk = SK[lk[0]], hc = HC[lk[1]], hs = lk[2], bd = lk[3], ex = lk[4].split('+');
+  const cl = 'color-mix(in srgb, var(--c) 78%, #1b1b1b)';
+  let back = '', body = '', front = '', beard = '', extra = '';
+  if (hs === 'long') back += `<path d="M19 28C15 44 17 52 20 55L44 55C47 52 49 44 45 28Z" fill="${hc}"/>`;
+  if (hs === 'wig') back += [[17.5, 29], [15.5, 36], [18.5, 43], [46.5, 29], [48.5, 36], [45.5, 43]].map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="${hc}"/>`).join('');
+  if (hs === 'bun') back += `<circle cx="32" cy="12" r="5.5" fill="${hc}"/>`;
+  body += `<path d="M4 66C6 51 19 46 32 46S58 51 60 66Z" style="fill:${cl}"/>`;
+  if (ex.includes('toga')) body += `<path d="M9 62C13 52 24 49 32 49C26 56 22 60 20 66H7Z" fill="#f4f1ea" opacity=".92"/>`;
+  if (ex.includes('cravat')) body += `<path d="M27 46L32 55L37 46L32 49Z" fill="#f4f1ea"/>`;
+  if (ex.includes('collar')) body += `<path d="M24 46L32 55L40 46" fill="none" stroke="#f4f1ea" stroke-width="2.4" stroke-linejoin="round"/>`;
+  body += `<rect x="28" y="36" width="8" height="12" rx="3" fill="${sk}"/>`;
+  if (hs === 'short' || hs === 'bun') front += `<path d="M20.5 28C19 14 45 14 43.5 28C41 21 36 19 32 19C27 19 23 21 20.5 28Z" fill="${hc}"/>`;
+  if (hs === 'side' || hs === 'long') front += `<path d="M20.5 29C19 13 44 13 43.5 27C38 24 31 22 26 19C24 22 22 25 20.5 29Z" fill="${hc}"/>`;
+  if (hs === 'tufts') front += `<path d="M20.5 28C19.5 22 21.5 20 23.5 22L22.5 31Z" fill="${hc}"/><path d="M43.5 28C44.5 22 42.5 20 40.5 22L41.5 31Z" fill="${hc}"/>`;
+  if (hs === 'curly') front += [[23, 19.5], [28, 16], [33, 15], [38, 16.5], [42, 20], [20.5, 25], [44, 25]].map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="4.2" fill="${hc}"/>`).join('');
+  if (hs === 'wig') front += `<path d="M19.5 28C17 12 47 12 44.5 28C42 20 37 18 32 18C27 18 22 20 19.5 28Z" fill="${hc}"/>`;
+  if (bd === 'long') beard = `<path d="M21 31C21 42 26 49 32 50C38 49 43 42 43 31C41 38 37 39 32 39C27 39 23 38 21 31Z" fill="${hc}"/>`;
+  if (bd === 'short') beard = `<path d="M21.5 32C22 40 27 43 32 43C37 43 42 40 42.5 32C40 36 36 36.5 32 36.5C28 36.5 24 36 21.5 32Z" fill="${hc}"/>`;
+  if (bd === 'goat') beard = `<path d="M29 38C29 42 31 44 32 44C33 44 35 42 35 38Z" fill="${hc}"/>`;
+  if (bd === 'must') beard = `<path d="M26 35.5C28.5 33.5 31 34.5 32 35.5C33 34.5 35.5 33.5 38 35.5C35 37 33 36.5 32 36C31 36.5 29 37 26 35.5Z" fill="${hc}"/>`;
+  if (ex.includes('glass')) extra += `<g fill="none" stroke="#2a2a2a" stroke-width="1.1"><circle cx="27.5" cy="29" r="3.8"/><circle cx="36.5" cy="29" r="3.8"/><path d="M31.3 29H32.7"/></g>`;
+  if (ex.includes('laurel')) extra += `<path d="M20 23C22 15 27 13 32 13C37 13 42 15 44 23" fill="none" stroke="#6b8e3a" stroke-width="2.2" stroke-dasharray="3 1.6" stroke-linecap="round"/>`;
+  const delay = -((hash(m.id) % 50) / 10);
+  return `<svg viewBox="0 0 64 64" aria-hidden="true">
+    <circle cx="32" cy="32" r="32" style="fill:color-mix(in srgb, var(--c) 18%, var(--panel))"/>
+    ${back}${body}
+    <ellipse cx="21" cy="30" rx="2.4" ry="3.2" fill="${sk}"/><ellipse cx="43" cy="30" rx="2.4" ry="3.2" fill="${sk}"/>
+    <ellipse cx="32" cy="29" rx="11" ry="13" fill="${sk}"/>
+    <path d="M24.5 25.5L30 25M34 25L39.5 25.5" stroke="#4a3b30" stroke-width="1.4" stroke-linecap="round" fill="none" opacity=".85"/>
+    <ellipse class="eye" style="animation-delay:${delay}s" cx="27.5" cy="29" rx="1.3" ry="1.7" fill="#1d1a18"/><ellipse class="eye" style="animation-delay:${delay}s" cx="36.5" cy="29" rx="1.3" ry="1.7" fill="#1d1a18"/>
+    <path d="M32 30.5L31 34H33" stroke="rgba(0,0,0,.28)" fill="none" stroke-width="1" stroke-linecap="round"/>
+    ${beard}
+    <path d="M29.5 37.6Q32 39.2 34.5 37.6" fill="none" stroke="${bd === 'n' ? '#8a4a3c' : '#3a2a22'}" stroke-width="1.2" stroke-linecap="round"/>
+    ${front}${extra}
+    <circle cx="51" cy="51" r="11" style="fill:var(--panel);stroke:var(--c)" stroke-width="1.6"/>
+    ${emblem(m).replace('<svg ', '<svg x="42" y="42" width="18" height="18" ')}
+  </svg>`;
+}
+let portraits = {};
+try { portraits = JSON.parse(localStorage.getItem('mc_portraits') || '{}') || {}; } catch (e) { portraits = {}; }
+function savePortraits() { try { localStorage.setItem('mc_portraits', JSON.stringify(portraits)); } catch (e) { } }
+function avatar(m) {
+  const p = portraits[m.id];
+  return `<div class="glyph" style="--c:var(--t${m.type})">${p ? `<img src="${p}" alt="">` : portrait(m)}</div>`;
+}
+
+/* ---------- 状態 ---------- */
+let sel = [];
+let filt = -1;
+let showHint = true;
+let S = null;
+let streak = 0;
+// 戦闘の乱数。オンライン対戦では両者が同じ種(seed)から作った乱数を使い、同じ結果になるようにする。
+let R = Math.random;
+let ME = 'you', OPP = 'foe', NET = null, level = 'normal';
+try { level = localStorage.getItem('mc_level') || 'normal'; } catch (e) { level = 'normal'; }
+const role = s => s === ME ? 'you' : 'foe';
+function mulberry(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+let best = 0;
+try { best = +(localStorage.getItem('mc_best') || 0); } catch (e) { best = 0; }
+const $app = document.getElementById('app');
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const sleep = ms => new Promise(r => setTimeout(r, reduced ? 0 : ms));
+const cur = side => S.team[side][S.i[side]];
+const other = side => side === 'you' ? 'foe' : 'you';
+const alive = side => S.team[side].map((x, i) => x.hp > 0 ? i : -1).filter(i => i >= 0);
+const stm = n => n >= 0 ? (2 + n) / 2 : 2 / (2 - n);
+const mkMon = (id, side) => ({ m: byId[id], side, hp: byId[id].hp, st: { atk: 0, def: 0, spd: 0 }, status: null, lemma: false, turnsIn: 0, flags: {}, dead: false });
+
+function fxTags(fx) {
+  if (!fx) return [];
+  const t = [], c = fx.c && fx.c < 100 ? `${fx.c}%で` : '';
+  if (fx.pr) t.push('先制');
+  if (fx.guard) t.push('このターンの攻撃を防ぐ(連続は失敗)');
+  if (fx.multi) t.push('2回攻撃');
+  if (fx.spw) t.push('空間が広がっていると1.5倍');
+  if (fx.space) t.push(`${SP[fx.space].name}を展開`);
+  if (fx.clear) t.push(fx.clear > 1 ? '相手の強化と空間を消し、自分の難問を治す' : '相手の強化を打ち消す');
+  if (fx.heal) t.push(`HP${Math.round(fx.heal * 100)}%回復`);
+  if (fx.lemma) t.push('次の攻撃が1.5倍');
+  if (fx.drain) t.push(`ダメージの${Math.round(fx.drain * 100)}%吸収`);
+  if (fx.recoil) t.push(`反動${Math.round(fx.recoil * 100)}%`);
+  if (fx.status) t.push(`${c}難問`);
+  for (const k in (fx.self || {})) t.push(`${c}自分の${LS[k]}${fx.self[k] > 0 ? '+' : ''}${fx.self[k]}`);
+  for (const k in (fx.foe || {})) t.push(`${c}相手の${LS[k]}${fx.foe[k] > 0 ? '+' : ''}${fx.foe[k]}`);
+  return t;
+}
+
+/* ---------- 画面 ---------- */
+function renderSelect() {
+  const slots = [0, 1, 2].map(i => {
+    const m = byId[sel[i]];
+    return `<div class="slot ${m ? 'on' : ''}">${i === 0 ? '先発' : '控え' + i}：${m ? m.name : '未選択'}</div>`;
+  }).join('');
+  const filters = `<div class="filters"><span class="muted" style="font-size:13px">分野で絞る</span>
+    <button class="chip btn" style="--c:var(--fg)" data-act="filter" data-t="-1" aria-pressed="${filt === -1}">すべて</button>
+    ${TYPES.map((t, i) => `<button class="chip btn" style="--c:var(--t${i})" data-act="filter" data-t="${i}" aria-pressed="${filt === i}">${t}</button>`).join('')}</div>`;
+  const cards = M.filter(m => filt < 0 || m.type === filt).map(m => {
+    const k = sel.indexOf(m.id);
+    return `<button class="card" data-act="pick" data-id="${m.id}" aria-pressed="${k >= 0}">
+      ${k >= 0 ? `<span class="order">${k + 1}</span>` : ''}
+      ${avatar(m)}
+      <div class="info">
+        <div class="nm">${m.name}${chip(m.type)}</div>
+        <div class="yr">${m.years}</div>
+        <div class="st">HP${m.hp} 攻${m.atk} 防${m.def} 速${m.spd}</div>
+        <div class="abl"><b>${AB[m.ab][0]}</b> ${AB[m.ab][1]}</div>
+      </div></button>`;
+  }).join('');
+  const lobby = NET ? `<div class="panel lobby"><b>オンライン対戦</b> あなたは${NET.host ? '部屋の主' : '参加者'}です。${lobbyStatus()}</div>` : '';
+  const lv = NET ? '' : `<div class="filters"><span class="muted" style="font-size:13px">CPUの強さ</span>${[['easy', 'やさしい'], ['normal', 'ふつう'], ['hard', 'つよい']].map(([k, n]) => `<button class="chip btn" style="--c:var(--fg)" data-act="level" data-l="${k}" aria-pressed="${level === k}">${n}</button>`).join('')}</div>`;
+  const go = NET
+    ? `<button class="act" data-act="ready" ${sel.length === 3 && !ONL.ready ? '' : 'disabled'}>${ONL.ready ? '相手を待っています…' : '準備完了'}</button><button class="act ghost" data-act="leave">切断</button>`
+    : `<button class="act ghost" data-act="online">オンライン対戦</button><button class="act" data-act="start" ${sel.length === 3 ? '' : 'disabled'}>対戦開始</button>`;
+  return `${lobby}<div class="panel strip">
+      <div class="slots">${slots}</div>
+      <div class="btns">
+        <button class="act ghost" data-act="random">おまかせ</button>
+        <button class="act ghost" data-act="clear">選び直す</button>
+        ${go}
+      </div></div>
+    <h2>3人を選んで先発順に並べる</h2>
+    <p class="muted" style="font-size:13px">${NET ? '選んだ3人は、並べた順に出ます。' : `勝つほど連勝が伸びます。最高記録：${best}連勝`}</p>
+    ${lv}${filters}
+    <div class="roster">${cards}</div>`;
+}
+
+function badges(mon) {
+  const b = [];
+  for (const k of ['atk', 'def', 'spd']) if (mon.st[k]) b.push(`<span class="bd ${mon.st[k] > 0 ? 'up' : 'down'}">${LS[k]}${mon.st[k] > 0 ? '+' : ''}${mon.st[k]}</span>`);
+  if (mon.status) b.push('<span class="bd st">難問</span>');
+  if (mon.lemma) b.push('<span class="bd up">補題</span>');
+  return b.join('');
+}
+function fighter(side, hs) {
+  const f = cur(side), m = f.m, r = f.hp / m.hp;
+  const cls = r > .5 ? 'ok' : r > .2 ? 'mid' : 'low';
+  return `<div class="fighter ${role(side)} ${hs === side ? 'hit' : ''} ${f.hp <= 0 ? 'down' : ''}">
+    ${avatar(m)}
+    <div class="fbody">
+      <div class="fname"><strong>${m.name}</strong>${chip(m.type)}<span class="who">${side === ME ? 'YOU' : (NET ? 'FOE' : 'CPU')}</span></div>
+      <div class="ab"><b>${AB[m.ab][0]}</b> ${AB[m.ab][1]}</div>
+      ${hpBar(side + ':' + m.id, r, cls)}
+      <div class="hpnum">HP ${f.hp} / ${m.hp}</div>
+      <div class="bds">${badges(f)}</div>
+      <div class="pips" aria-label="残り人数">${S.team[side].map(x => `<i class="${x.hp > 0 ? 'on' : ''}"></i>`).join('')}</div>
+    </div></div>`;
+}
+function benchHtml(act) {
+  return `<div class="bench">${S.team[ME].map((x, i) => {
+    if (i === S.i[ME]) return '';
+    const dis = x.hp <= 0 || S.busy || (S.phase !== 'cmd' && S.phase !== 'forced');
+    const r = x.hp / x.m.hp;
+    return `<button class="sw" data-act="${act}" data-i="${i}" ${dis ? 'disabled' : ''}>
+      <span>${x.m.name}</span>${chip(x.m.type)}
+      <span class="hp"><span class="hp-fill ${r > .5 ? 'ok' : r > .2 ? 'mid' : 'low'}" style="display:block;width:${r * 100}%"></span></span>
+      <span class="hpnum">${x.hp}</span></button>`;
+  }).join('')}</div>`;
+}
+function renderBattle() {
+  const hs = S.hit ? S.hit.side : null; S.hit = null;
+  const you = cur(ME), foe = cur(OPP);
+  let cmd = '';
+  if (S.phase === 'cmd' || S.phase === 'run' || S.phase === 'wait') {
+    cmd = `<h3>${you.m.name}の技${S.waiting ? ' <span class="muted">（相手の入力を待っています…）</span>' : ''}</h3><div class="moves">${you.m.moves.map((mv, i) => {
+      const util = mv[2] === 0, e = eff(mv[1], foe.m.type);
+      const hint = showHint ? (util ? '<em>補助</em>' : e > 1 ? '<em class="up">抜群 ×2</em>' : e < 1 ? '<em class="down">いまひとつ ×½</em>' : '<em>等倍</em>') : '';
+      const sm = util ? 1 : spaceMult(mv[1], you);
+      const tags = fxTags(mv[4]).concat(sm !== 1 ? [`空間 ×${sm}`] : []).join(' / ');
+      return `<button class="move" style="--c:var(--t${mv[1]})" data-act="move" data-i="${i}" ${S.busy ? 'disabled' : ''}>
+        <span class="mn">${mv[0]}</span><span class="mm">${TYPES[mv[1]]} · ${util ? '補助' : '威力' + mv[2]} · 命中${mv[3]}</span>
+        ${tags ? `<span class="mt">${tags}</span>` : ''}${hint}</button>`;
+    }).join('')}</div>
+    <h3 style="margin-top:14px">交代する</h3>${benchHtml('sw')}`;
+  } else if (S.phase === 'forced') {
+    cmd = `<h3>次に出す数学者を選ぼう</h3>${benchHtml('forced')}`;
+  } else {
+    const ttl = S.lost ? '接続切れ' : S.draw ? '引き分け' : S.won ? '勝利' : '敗北';
+    const msg = NET ? (S.lost ? '相手との接続が切れました。' : `${S.turn}ターンで決着。`) : (S.won ? `${streak}連勝中。最高記録は${best}連勝。` : `連勝は終わった。最高記録は${best}連勝。`) + `（${S.turn}ターン）`;
+    const btns = NET
+      ? (S.lost ? '<button class="act" data-act="leave">オンライン対戦を終える</button>' : '<button class="act" data-act="lobby">チーム選択に戻る</button><button class="act ghost" data-act="leave">切断</button>')
+      : (S.won ? '<button class="act" data-act="next">次の相手へ（全員HP35%回復）</button>' : '<button class="act" data-act="again">同じチームで再挑戦</button>') + '<button class="act ghost" data-act="menu">チームを選び直す</button>';
+    cmd = `<div class="result"><h3>${ttl}</h3><p class="muted">${msg}</p><div class="btns">${btns}</div></div>`;
+  }
+  const log = S.log.slice(-8).map(l => `<div>${l}</div>`).join('');
+  return `<div class="battle">
+    <div class="arena" data-sp="${S.space ? S.space.id : ''}">
+      <div class="turn"><span>TURN ${S.turn}</span>${NET ? '<span>オンライン対戦</span>' : `<span>連勝 ${streak} ／ 最高 ${best}</span>`}</div>
+      ${spaceBanner()}
+      ${fighter(OPP, hs)}${fighter(ME, hs)}
+      <label class="hint"><input type="checkbox" data-act="hint" ${showHint ? 'checked' : ''}> 技の相性ヒントを表示</label>
+      <label class="hint"><input type="checkbox" data-act="snd" ${soundOn ? 'checked' : ''}> 効果音</label>
+    </div>
+    <div class="side"><div class="panel">${cmd}</div><div class="panel log" aria-live="polite">${log}</div></div></div>`;
+}
+
+function dexHtml() {
+  return `<p class="muted" style="margin-bottom:12px;font-size:13px">全${M.length}人。写真は同梱せず、似顔絵風のイラストで表示しています。お手元の画像を「写真を設定」で選ぶと、この端末のブラウザ内だけでイラストの代わりに表示できます。</p>
+  <div class="dex">${M.map(m => `<div class="panel entry">
+    <div class="top">${avatar(m)}<div>
+      <div class="nm">${m.name}${chip(m.type)}</div>
+      <div class="mono muted" style="font-size:12px">${m.years}</div>
+      <div class="mono muted" style="font-size:12px">HP${m.hp} 攻${m.atk} 防${m.def} 速${m.spd}</div></div></div>
+    <div class="ab"><b>特性：${AB[m.ab][0]}</b> ${AB[m.ab][1]}</div>
+    <ul>${m.moves.map(mv => `<li><strong>${mv[0]}</strong> <span class="muted">${TYPES[mv[1]]}・${mv[2] ? '威力' + mv[2] : '補助'}${fxTags(mv[4]).length ? '・' + fxTags(mv[4]).join('、') : ''}</span></li>`).join('')}</ul>
+    <p class="note">${m.note}</p>
+    <div class="row"><label class="upl">写真を設定<input type="file" accept="image/*" data-portrait="${m.id}"></label>
+      ${portraits[m.id] ? `<button class="act ghost sm" data-act="unportrait" data-id="${m.id}">紋章に戻す</button>` : ''}</div>
+  </div>`).join('')}</div>`;
+}
+
+function planHtml() {
+  const head = TYPES.map((t, i) => `<th><span class="chip" style="--c:var(--t${i})">${t}</span></th>`).join('');
+  const rows = TYPES.map((t, a) => `<tr><th class="l"><span class="chip" style="--c:var(--t${a})">${t}</span></th>${TYPES.map((_, d) => {
+    const e = eff(a, d);
+    return `<td class="${e > 1 ? 'cell-up' : e < 1 ? 'cell-down' : ''}">${e > 1 ? '×2' : e < 1 ? '×½' : '・'}</td>`;
+  }).join('')}</tr>`).join('');
+  const roster = M.map(m => `<tr><td class="l"><strong>${m.name}</strong></td><td>${chip(m.type)}</td>
+    <td class="mono">${m.hp}</td><td class="mono">${m.atk}</td><td class="mono">${m.def}</td><td class="mono">${m.spd}</td>
+    <td class="l">${AB[m.ab][0]}</td></tr>`).join('');
+  const abs = M.map(m => `<tr><td class="l"><strong>${m.name}</strong></td><td class="l">${AB[m.ab][0]}</td><td class="w">${AB[m.ab][1]}</td></tr>`).join('');
+  return `<div class="doc">
+    <section><h2>コンセプト</h2>
+      <p>歴史上の数学者を選手に見立てた、3対3のターン制対戦ゲーム。数学者ごとに得意分野と特性があり、代表的な業績がそのまま技になる。数学が得意でなくても遊べて、遊ぶうちに「誰が何を成し遂げたか」が自然に頭に入る。</p></section>
+    <section><h2>ゲームの流れ</h2>
+      <ol><li>${M.length}人の数学者から3人を選び、先発順を決める。</li><li>相手(CPU)はランダムな3人で出てくる。CPUは相性が悪いと交代することもある。</li><li>毎ターン、技を使うか、控えに交代するかを選ぶ。</li><li>先制技が先、同じなら速さの高い側が先に動く。倒れたら次の数学者を出す。</li><li>相手の3人を倒したら勝ち。次の相手に進むと連勝が伸びる。味方は全員HPが35%回復し、倒れた仲間も復帰する。</li></ol></section>
+    <section><h2>分野の相性</h2>
+      <p>分野は6つで、輪の形につながっている。各分野は輪の次の2分野に強く(×2)、手前の2分野に弱い(×½)。正面の1分野は等倍になる。</p>
+      <div class="cycle">${TYPES.map((t, i) => chip(i) + ' →').join(' ')} ${chip(0)}</div>
+      <div class="scroll"><table><thead><tr><th class="l">攻撃＼防御</th>${head}</tr></thead><tbody>${rows}</tbody></table></div></section>
+    <section><h2>空間</h2>
+      <p>戦場には「空間」が広がることがある。特定の技や特性で展開され、5ターン続く。空間にいる間は、技の分野によって威力が変わる。別の空間が広がると上書きされる。</p>
+      <div class="scroll"><table><thead><tr><th class="l">空間</th><th class="l">強まる分野(×1.3)</th><th class="l">弱まる分野(×0.8)</th><th class="l">広げる方法</th></tr></thead><tbody>
+      ${Object.entries({ E: 'ユークリッドの「平行線公準」', H: 'ロバチェフスキーの登場時、または「双曲幾何」', C: 'コーシーの登場時、または「コーシーの積分定理」', P: 'コルモゴロフの「確率の公理化」', L: 'ヒルベルトの「ヒルベルト空間」', J: 'グロタンディークの「射影スキーム」', T: 'ポアンカレの「トポロジーの創始」', S: 'アルキメデスの「球と円柱」' }).map(([k, how]) => `<tr><td class="l"><strong>${SP[k].name}</strong></td><td class="l">${SP[k].up.map(t => chip(t)).join(' ')}</td><td class="l">${SP[k].down.map(t => chip(t)).join(' ')}</td><td class="w">${how}</td></tr>`).join('')}
+      </tbody></table></div></section>
+    <section><h2>ダメージの式</h2>
+      <div class="formula">ダメージ = ((攻 ÷ 相手の防) × 威力 × 0.32 + 2)
+         × 得意分野ボーナス(技の分野 = 自分の分野なら 1.5)
+         × 相性(2 / 1 / 0.5)
+         × 空間(強まる分野 1.3 / 弱まる分野 0.8)
+         × 補題(使用後の次の攻撃なら 1.5)
+         × 乱数(0.85〜1.0)
+         × ひらめき(通常 1/16 の確率で 1.5)</div>
+      <p class="muted">攻撃・防御・速さは段階で変化し、+1で×1.5、+2で×2、-1で×0.67、-2で×0.5になる(±3まで)。威力が高い技ほど外れやすい。</p></section>
+    <section><h2>技の追加効果</h2>
+      <ul>
+        <li><strong>能力変化</strong>：自分の攻撃を上げる、相手の防御や速さを下げる。発動率が書かれた技は、その確率でだけ起きる。</li>
+        <li><strong>難問</strong>：解けない問題に取り憑かれる状態。毎ターン終了時に最大HPの1/8を失い、交代しても治らない。</li>
+        <li><strong>補題</strong>：補助技。使った次の攻撃が1.5倍になる。</li>
+        <li><strong>先制</strong>：速さに関係なく先に動く。</li>
+        <li><strong>反例</strong>：相手が積み上げた攻撃・防御・速さの上昇と補題を、まとめて元に戻す。補助技の「反例」「反例の提示」のほか、ワイエルシュトラスやカントールの攻撃技にもついている。ブールの「背理法」はさらに強く、広がっている空間も消し、自分の難問も治す。ブールには反例が効かない。</li>
+        <li><strong>空間展開</strong>：技が当たったあとに空間を広げる。</li>
+        <li><strong>守る</strong>：先制で動き、そのターンの攻撃をすべて防ぐ。2回続けて使うと失敗する。</li>
+        <li><strong>2回攻撃</strong>：1回の行動で2回当たる。</li>
+        <li><strong>空間連動</strong>：どれかの空間が広がっている間、威力が1.5倍になる。</li>
+        <li><strong>吸収・反動</strong>：与えたダメージの一部を回復する、または自分も受ける。</li>
+        <li><strong>回復・自己強化</strong>：ヒルベルトのホテルで回復、ガロアの手紙で攻撃を2段階上げる、など。</li>
+      </ul></section>
+    <section><h2>特性一覧</h2>
+      <p>数学者ごとに1つ。逸話や業績から決めている。</p>
+      <div class="scroll"><table><thead><tr><th class="l">数学者</th><th class="l">特性</th><th class="l">効果</th></tr></thead><tbody>${abs}</tbody></table></div></section>
+    <section><h2>数学者ロスター(${M.length}人)</h2>
+      <div class="scroll"><table><thead><tr><th class="l">名前</th><th>分野</th><th>HP</th><th>攻</th><th>防</th><th>速</th><th class="l">特性</th></tr></thead><tbody>${roster}</tbody></table></div>
+      <p class="muted">各分野に6〜7人ずつ。技や逸話は図鑑タブで読める。</p></section>
+    <section><h2>オンライン対戦</h2>
+      <p>2人のブラウザを、WebRTCで直接つなぐ。中継サーバーは使わないので、運営の設備は要らない。</p>
+      <ol>
+        <li>1人が「部屋を作る」でコードを作り、相手に送る。</li>
+        <li>もう1人が「部屋に入る」でコードを貼り付け、返信コードを作って送り返す。</li>
+        <li>部屋の主が返信コードを貼り付けて接続する。つながったら、それぞれ3人を選んで「準備完了」。</li>
+      </ol>
+      <p class="muted">対戦は、両者が同じ種の乱数から同じ計算をする方式。毎ターン、行動だけを送り合い、結果は各自のブラウザが同じ手順で計算する。命中、ひらめき、乱数の幅も両者で一致する。接続できるのは、公開したページ(GitHub Pagesなど)をブラウザで直接開いたとき。共有プレビューのような埋め込み表示では、ブラウザの制限で通信できないことがある。</p></section>
+    <section><h2>CPUの強さ</h2>
+      <p>対戦前の画面で、やさしい・ふつう・つよいを選べる。やさしいは技をでたらめに選ぶことが多く、交代もしない。つよいは、相性と威力から最善に近い技を選び、不利なら積極的に交代する。</p></section>
+    <section><h2>演出</h2>
+      <ul>
+        <li>技が当たると、技の分野に合った記号(数論なら素数、解析なら∫や∞、論理なら∴や∀)が飛び散り、ダメージ数字が浮かぶ。</li>
+        <li>抜群やひらめきの一撃では、記号が増えて画面が揺れる。</li>
+        <li>HPバーはダメージ量だけ遅れて追いかける。HPが少なくなると点滅する。</li>
+        <li>空間が広がると画面に名前が出て、戦場の背景が空間の模様(格子、同心円、座標軸、点、斜線、放射、楕円の輪)に変わる。</li>
+        <li>能力の上下、回復、守る、倒れる、勝敗にもそれぞれ演出と効果音がある。効果音は戦闘画面で切り替えられる。動きを減らす設定の端末では、画面の揺れと粒子を止める。</li>
+      </ul></section>
+    <section><h2>見た目と写真</h2>
+      <p>実在の人物の写真は同梱せず、髪型、ひげ、眼鏡、服装で描き分けた似顔絵風のイラストを使う。右下の丸い印は、各人の業績をモチーフにした紋章(正規分布の曲線、ヒルベルト曲線、パスカルの三角形など)。手元にある画像は図鑑から設定でき、その端末のブラウザにだけ保存される。</p></section>
+    <section><h2>今後の拡張案</h2>
+      <ul>
+        <li>空間の追加：メビウスの帯、複素射影空間など。空間が変わった瞬間に発動する特性も増やす。</li>
+        <li>数学者の追加：ヴァイユ、ゲルファント、ラマヌジャンの師ハーディなど。世界各地の数学者を増やしたい。</li>
+        <li>オンライン対戦の観戦、ルームコードだけでつながる中継サーバー(任意)。</li>
+        <li>学習モード：技を使うと業績カードが解放される。</li>
+        <li>育成と対人戦：技の習得、ランクマッチ、友達との通信対戦。</li>
+      </ul></section>
+    <section><h2>権利面の方針</h2>
+      <p>既存ゲームの名称、キャラクター、デザイン、技名、画面素材は使わず、実在した数学者と数学用語だけで構成する。公開や配布を考える場合は、タイトルも既存作品と紛らわしくならない独自のものに変える。</p></section>
+  </div>`;
+}
+
+function render() {
+  const h = location.hash.replace('#', '');
+  const tab = (h === 'plan' || h === 'dex') ? h : 'battle';
+  document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === tab)));
+  $app.innerHTML = tab === 'plan' ? planHtml() : tab === 'dex' ? dexHtml() : (S ? renderBattle() : ONL.open && !NET ? renderOnline() : renderSelect());
+  if (HAS_DOM) requestAnimationFrame(() => requestAnimationFrame(() => document.querySelectorAll('[data-w]').forEach(e => { e.style.width = e.dataset.w + '%'; })));
+}
+
+/* ---------- 演出(パーティクル・効果音) ---------- */
+const HAS_DOM = typeof document !== 'undefined' && !!document.createElement && !!document.body;
+let lastW = {};
+function hpBar(key, r, cls) {
+  const w = Math.max(0, r * 100), prev = lastW[key] !== undefined ? lastW[key] : w;
+  lastW[key] = w;
+  return `<div class="hp"><div class="hp-lag" data-w="${w}" style="width:${prev}%"></div><div class="hp-fill ${cls}" data-w="${w}" style="width:${prev}%"></div></div>`;
+}
+// 分野ごとの飛び散る記号
+const GLY = [['7', '13', 'π', '29', 'mod', '∑'], ['x', 'σ', '⊕', 'ℤ', 'a·b', 'e'], ['△', '○', '□', '∠', '⌒', '◇'], ['∫', '∞', 'ε', 'dx', 'Δ', '∂'], ['●', '?', '♢', 'P', '%', 'μ'], ['∴', '¬', '∀', '⊢', '∃', '⊥']];
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const rnd = (a, b) => a + Math.random() * (b - a);
+const tcol = i => (HAS_DOM && getComputedStyle(document.documentElement).getPropertyValue('--t' + i).trim()) || '#888';
+let parts = [], raf = 0, dpr = 1, fctx = null, fxc = null;
+if (HAS_DOM) {
+  fxc = document.createElement('canvas');
+  fxc.setAttribute('aria-hidden', 'true');
+  fxc.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60';
+  document.body.appendChild(fxc);
+  fctx = fxc.getContext('2d');
+  const fit = () => { dpr = Math.min(2, window.devicePixelRatio || 1); fxc.width = innerWidth * dpr; fxc.height = innerHeight * dpr; };
+  fit(); addEventListener('resize', fit);
+}
+function emit(p) { p.max = p.max || p.life; parts.push(p); if (!raf && fctx) raf = requestAnimationFrame(tick); }
+function tick() {
+  fctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  fctx.clearRect(0, 0, innerWidth, innerHeight);
+  fctx.textAlign = 'center'; fctx.textBaseline = 'middle';
+  for (const p of parts) {
+    p.x += p.vx; p.y += p.vy; p.vy += p.g; p.vx *= p.drag; p.life--;
+    fctx.globalAlpha = Math.max(0, Math.min(1, p.life / p.max * 1.6));
+    if (p.ring) { fctx.lineWidth = 3; fctx.strokeStyle = p.color; fctx.beginPath(); fctx.arc(p.x, p.y, p.r, 0, 6.283); fctx.stroke(); p.r += p.grow; continue; }
+    fctx.font = `${p.bold ? 700 : 500} ${p.size}px 'DM Mono','Zen Kaku Gothic New',monospace`;
+    if (p.stroke) { fctx.lineWidth = 5; fctx.lineJoin = 'round'; fctx.strokeStyle = p.stroke; fctx.strokeText(p.t, p.x, p.y); }
+    fctx.fillStyle = p.color; fctx.fillText(p.t, p.x, p.y);
+  }
+  parts = parts.filter(p => p.life > 0);
+  fctx.globalAlpha = 1;
+  raf = parts.length ? requestAnimationFrame(tick) : 0;
+}
+function center(side) {
+  if (!HAS_DOM) return null;
+  const f = document.querySelector('.fighter.' + role(side)), g = f && f.querySelector('.glyph');
+  if (!g) return null;
+  const r = g.getBoundingClientRect();
+  return { x: r.left + r.width / 2, y: r.top + r.height / 2, el: f };
+}
+function burst(c, type, n, spd) {
+  for (let i = 0; i < n; i++) { const a = rnd(0, 6.283), s = rnd(spd * .4, spd); emit({ x: c.x, y: c.y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, g: .08, drag: .96, life: 46, t: pick(GLY[type]), size: rnd(16, 26), color: tcol(type) }); }
+}
+function ring(c, color, r0, grow, life) { emit({ ring: true, x: c.x, y: c.y, r: r0 || 10, grow: grow || 3.4, vx: 0, vy: 0, g: 0, drag: 1, life: life || 22, color, size: 0 }); }
+function floatTxt(c, text, color, size, dy) { emit({ x: c.x + rnd(-6, 6), y: c.y + (dy || -30), vx: 0, vy: -1.3, g: .015, drag: 1, life: 60, t: text, size, color: '#fff', stroke: color, bold: true }); }
+function shake(a) {
+  if (!HAS_DOM || reduced) return;
+  const w = document.querySelector('.wrap'); if (!w) return;
+  w.animate([{ transform: 'translate(0,0)' }, { transform: `translate(${-a}px,${a / 2}px)` }, { transform: `translate(${a}px,${-a / 2}px)` }, { transform: `translate(${-a / 2}px,0)` }, { transform: 'translate(0,0)' }], 320);
+}
+function lunge(side, type) {
+  if (!HAS_DOM || reduced) return;
+  const c = center(side); if (!c) return;
+  const dy = side === 'you' ? -16 : 16, dx = side === 'you' ? 10 : -10;
+  c.el.animate([{ transform: 'translate(0,0)' }, { transform: `translate(${dx}px,${dy}px) scale(1.03)`, offset: .3 }, { transform: 'translate(0,0)' }], { duration: 420, easing: 'ease-out' });
+  ring(c, tcol(type), 8, 2.4, 22); burst(c, type, 6, 2.6);
+}
+function playHit(side, type, dealt, r) {
+  sfx(r.crit ? 'crit' : r.e > 1 ? 'super' : r.e < 1 ? 'weak' : 'hit');
+  const c = center(side); if (!c) return;
+  floatTxt(c, '-' + dealt, tcol(type), r.e > 1 ? 40 : r.e < 1 ? 24 : 32);
+  const label = r.crit ? 'ひらめき!' : r.e > 1 ? '抜群!' : r.e < 1 ? 'いまひとつ' : '';
+  if (label) floatTxt(c, label, tcol(type), 16, -62);
+  if (reduced) return;
+  burst(c, type, r.e > 1 ? 26 : 14, r.e > 1 ? 7 : 5); ring(c, tcol(type));
+  c.el.animate([{ boxShadow: `0 0 0 0 ${tcol(type)}` }, { boxShadow: `0 0 28px 4px ${tcol(type)}`, offset: .3 }, { boxShadow: '0 0 0 0 transparent' }], 480);
+  if (r.crit || r.e > 1) shake(r.crit ? 9 : 5);
+}
+function fxStage(side, up) {
+  sfx(up ? 'up' : 'down');
+  const c = center(side); if (!c || reduced) return;
+  for (let i = 0; i < 6; i++) emit({ x: c.x + rnd(-26, 26), y: c.y + (up ? 24 : -24), vx: 0, vy: up ? rnd(-1.8, -1) : rnd(1, 1.8), g: 0, drag: 1, life: 40, t: up ? '↑' : '↓', size: 22, bold: true, color: up ? '#2fbf71' : '#e5533d' });
+}
+function fxHeal(side) {
+  sfx('heal');
+  const c = center(side); if (!c || reduced) return;
+  for (let i = 0; i < 8; i++) emit({ x: c.x + rnd(-28, 28), y: c.y + rnd(0, 26), vx: 0, vy: rnd(-1.6, -.7), g: 0, drag: 1, life: 46, t: '+', size: rnd(18, 28), bold: true, color: '#2fbf71' });
+}
+function fxGuard(side) {
+  const c = center(side); if (!c || reduced) return;
+  ring(c, tcol(2), 14, 1.6, 30); ring(c, tcol(5), 6, 2.6, 24); burst(c, 2, 8, 3);
+}
+function fxFaint(side) {
+  const c = center(side); if (!c) return;
+  if (reduced) return;
+  for (let i = 0; i < 18; i++) emit({ x: c.x + rnd(-24, 24), y: c.y + rnd(-20, 20), vx: rnd(-1, 1), vy: rnd(-1, 1), g: .12, drag: .98, life: 60, t: pick(GLY[Math.floor(Math.random() * 6)]), size: rnd(14, 24), color: '#8a8a8a' });
+  c.el.animate([{ opacity: 1, transform: 'none' }, { opacity: .4, transform: 'translateY(14px) scale(.96)' }], { duration: 500, fill: 'forwards' });
+}
+function playSpace(id) {
+  sfx('space');
+  if (!HAS_DOM) return;
+  const col = tcol(SPCOL[id]);
+  const b = document.createElement('div');
+  b.className = 'banner'; b.style.setProperty('--c', col);
+  b.innerHTML = `<b>${SP[id].name}</b><span>${SP[id].desc}</span>`;
+  document.body.appendChild(b); setTimeout(() => b.remove(), 2300);
+  if (reduced) return;
+  const set = GLY[SP[id].up[0]];
+  for (let i = 0; i < 46; i++) emit({ x: rnd(0, innerWidth), y: rnd(-60, innerHeight * .5), vx: rnd(-.4, .4), vy: rnd(1, 3), g: .02, drag: 1, life: 70 + Math.floor(rnd(0, 40)), t: pick(set), size: rnd(16, 30), color: col });
+}
+function fxEnd(won) {
+  sfx(won ? 'win' : 'lose');
+  if (!HAS_DOM || reduced) return;
+  for (let i = 0; i < 70; i++) { const t = Math.floor(Math.random() * 6); emit({ x: rnd(0, innerWidth), y: rnd(-80, 0), vx: rnd(-.6, .6), vy: rnd(1.5, 3.5), g: .02, drag: 1, life: 120 + Math.floor(rnd(0, 60)), t: pick(GLY[t]), size: rnd(16, 32), bold: true, color: won ? tcol(t) : '#8a8a8a' }); }
+}
+// 効果音(WebAudio)
+let AC = null, soundOn = true;
+function tone(f, d, o) {
+  o = o || {};
+  const t0 = AC.currentTime + (o.at || 0), osc = AC.createOscillator(), g = AC.createGain();
+  osc.type = o.type || 'sine'; osc.frequency.setValueAtTime(f, t0);
+  if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t0 + d);
+  g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(o.v || 0.07, t0 + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+  osc.connect(g); g.connect(AC.destination); osc.start(t0); osc.stop(t0 + d + 0.02);
+}
+function sfx(k) {
+  if (!soundOn) return;
+  try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    if (AC.state === 'suspended') AC.resume();
+    const T = {
+      tick: () => tone(660, .04, { type: 'square', v: .02 }),
+      cast: () => tone(300, .18, { type: 'triangle', to: 600, v: .05 }),
+      hit: () => tone(180, .14, { type: 'square', to: 60, v: .09 }),
+      super: () => { tone(220, .12, { type: 'sawtooth', to: 70, v: .09 }); tone(880, .1, { at: .06, type: 'square', v: .05 }); tone(1175, .14, { at: .12, type: 'square', v: .05 }); },
+      weak: () => tone(120, .16, { to: 80, v: .07 }),
+      crit: () => { tone(1500, .2, { type: 'sawtooth', to: 300, v: .06 }); tone(180, .14, { type: 'square', to: 60, v: .09 }); },
+      miss: () => tone(500, .2, { to: 200, v: .04 }),
+      heal: () => [523, 659, 784].forEach((f, i) => tone(f, .14, { at: i * .07, v: .05 })),
+      up: () => tone(440, .22, { type: 'triangle', to: 880, v: .06 }),
+      down: () => tone(500, .22, { type: 'triangle', to: 220, v: .06 }),
+      guard: () => { tone(300, .12, { type: 'square', v: .05 }); tone(450, .14, { at: .08, type: 'square', v: .04 }); },
+      faint: () => tone(400, .6, { type: 'sawtooth', to: 50, v: .07 }),
+      space: () => { tone(120, .7, { type: 'sawtooth', to: 900, v: .05 }); tone(240, .7, { to: 1200, v: .04 }); },
+      win: () => [523, 659, 784, 1047, 784, 1047].forEach((f, i) => tone(f, .18, { at: i * .11, type: 'square', v: .05 })),
+      lose: () => [392, 349, 311, 262].forEach((f, i) => tone(f, .28, { at: i * .2, type: 'triangle', v: .06 }))
+    };
+    (T[k] || T.tick)();
+  } catch (e) { }
+}
+
+/* ---------- 戦闘ロジック ---------- */
+function say(t) { S.log.push(t); }
+function spaceMult(t, mon) {
+  if (!S || !S.space) return 1;
+  const sp = SP[S.space.id];
+  if (sp.up.includes(t)) return 1.3;
+  if (sp.down.includes(t)) return mon && mon.m.ab === 'lagrange' ? 1 : 0.8;
+  return 1;
+}
+function setSpace(id) {
+  if (S.space && S.space.id === id) { say(`すでに${SP[id].name}が広がっている。`); return; }
+  S.space = { id, turns: SPACE_TURNS };
+  say(`${SP[id].name}が広がった！ ${SP[id].desc}`);
+  playSpace(id);
+  for (const m of [cur('you'), cur('foe')]) {
+    if (m.hp > 0 && m.m.ab === 'neumann') { abSay(m); changeStage(m, 'def', 1, m); }
+  }
+}
+function counter(mon, def, fx) {
+  clearBoosts(def);
+  if (fx.clear > 1) {
+    if (S.space) { say(`${SP[S.space.id].name}が消えた。`); S.space = null; }
+    if (mon.status) { mon.status = null; say(`${mon.m.name}の難問が解けた！`); }
+  }
+}
+function clearBoosts(def) {
+  if (def.m.ab === 'boole') { say(`${def.m.name}は特性「${AB.boole[0]}」で強化を打ち消されない。`); return; }
+  let any = false;
+  for (const k of ['atk', 'def', 'spd']) if (def.st[k] > 0) { def.st[k] = 0; any = true; }
+  if (def.lemma) { def.lemma = false; any = true; }
+  say(any ? `${def.m.name}の強化が打ち消された！` : `${def.m.name}に打ち消す強化はなかった。`);
+}
+function spaceBanner() {
+  if (!S.space) return '<div class="space">空間：通常の世界</div>';
+  const sp = SP[S.space.id];
+  return `<div class="space on"><b>${sp.name}</b><span>${sp.desc}</span><em>残り${S.space.turns}ターン</em></div>`;
+}
+function abSay(mon) { say(`${mon.m.name}の特性「${AB[mon.m.ab][0]}」！`); }
+function changeStage(mon, k, n, src) {
+  if (mon.hp <= 0) return;
+  if (n < 0 && mon.m.ab === 'kolmogorov' && src !== mon) { say(`${mon.m.name}は特性「${AB.kolmogorov[0]}」で能力が下がらない。`); return; }
+  const before = mon.st[k];
+  mon.st[k] = Math.max(-3, Math.min(3, before + n));
+  if (mon.st[k] === before) { say(`${mon.m.name}の${LS[k]}はこれ以上${n > 0 ? '上がらない' : '下がらない'}。`); return; }
+  say(`${mon.m.name}の${LS[k]}が${Math.abs(n) > 1 ? 'ぐーんと' : ''}${n > 0 ? '上がった' : '下がった'}！`);
+  fxStage(mon.side, n > 0);
+  if (n < 0 && src !== mon && mon.m.ab === 'tarski' && mon.st.atk < 3) { mon.st.atk++; say(`${mon.m.name}の特性「${AB.tarski[0]}」で攻撃が上がった！`); fxStage(mon.side, true); }
+}
+function hurt(mon, n, sturdy) {
+  if (mon.dead || mon.hp <= 0) return 0;
+  const before = mon.hp;
+  if (sturdy && mon.m.ab === 'godel' && !mon.flags.sturdy && before === mon.m.hp && n >= before) {
+    mon.flags.sturdy = true; mon.hp = 1;
+    say(`${mon.m.name}は特性「${AB.godel[0]}」でHP1で耐えた！`);
+    return before - 1;
+  }
+  mon.hp = Math.max(0, before - n);
+  return before - mon.hp;
+}
+function faintCheck(mon) {
+  if (mon.hp > 0 || mon.dead) return;
+  mon.dead = true; say(`${mon.m.name}は力尽きた。`); fxFaint(mon.side); sfx('faint');
+  if (mon.m.ab === 'galois') {
+    const o = cur(other(mon.side));
+    if (o.hp > 0) {
+      const d = Math.max(1, Math.floor(o.m.hp / 4));
+      hurt(o, d); S.hit = { side: o.side };
+      say(`${mon.m.name}の特性「${AB.galois[0]}」！ ${o.m.name}に${d}ダメージ。`);
+      faintCheck(o);
+    }
+  }
+}
+function enter(mon) {
+  mon.turnsIn = 0;
+  const ab = mon.m.ab, foe = cur(other(mon.side));
+  if (ab === 'noether') { abSay(mon); changeStage(mon, 'def', 1, mon); }
+  else if (ab === 'hilbert' && foe.hp > 0) { abSay(mon); changeStage(foe, 'def', -1, mon); }
+  else if (ab === 'newton' && foe.hp > 0) { abSay(mon); changeStage(foe, 'spd', -1, mon); }
+  else if (ab === 'grothendieck') { abSay(mon); changeStage(mon, 'atk', 1, mon); changeStage(mon, 'def', 1, mon); changeStage(mon, 'spd', -1, mon); }
+  else if (ab === 'brahmagupta') { abSay(mon); [mon, foe].forEach(x => { x.st = { atk: 0, def: 0, spd: 0 }; }); say('場にいる両者の能力変化が0に戻った。'); }
+  else if (ab === 'lobachevsky') { abSay(mon); setSpace('H'); }
+  else if (ab === 'cauchy') { abSay(mon); setSpace('C'); }
+  else if (ab === 'hypatia') {
+    const hurtMates = S.team[mon.side].filter(x => x !== mon && x.hp > 0 && x.hp < x.m.hp);
+    if (hurtMates.length) { abSay(mon); hurtMates.forEach(x => { x.hp = Math.min(x.m.hp, x.hp + Math.ceil(x.m.hp * 0.08)); }); say('控えの仲間のHPが回復した。'); }
+  }
+}
+function calc(att, def, mv, lem) {
+  const [, t, p] = mv, e = eff(t, def.m.type), stab = t === att.m.type ? 1.5 : 1;
+  const critP = att.m.ab === 'ramanujan' ? 1 / 6 : 1 / 16;
+  const crit = def.m.ab !== 'laplace' && R() < critP;
+  const r = 0.85 + R() * 0.15;
+  let x = ((att.m.atk * stm(att.st.atk)) / (def.m.def * stm(def.st.def)) * p * 0.32 + 2) * stab * e * r;
+  if (crit) x *= 1.5;
+  if (lem) x *= 1.5;
+  if (att.m.ab === 'gauss' && e > 1) x *= 1.2;
+  if (att.m.ab === 'archimedes' && p <= 65) x *= 1.5;
+  if (def.m.ab === 'seki' && e > 1) x *= 0.75;
+  x *= spaceMult(t, att);
+  if (att.m.ab === 'mirzakhani' && S.space && S.space.id === 'H') x *= 1.5;
+  if (mv[4] && mv[4].spw && S.space) x *= 1.5;
+  if (att.m.ab === 'dirichlet' && t === 0) x *= 1 + 0.2 * Math.min(2, att.flags.chain || 0);
+  if (att.m.ab === 'erdos' && mv[3] <= 85) x *= 1.25;
+  if (att.m.ab === 'khwarizmi' && mv[4] && mv[4].pr) x *= 1.3;
+  if (def.m.ab === 'shannon' && att.flags.lastT === t) x *= 0.75;
+  let lb = false;
+  if (def.m.ab === 'germain' && !def.flags.lb) { x *= 0.5; def.flags.lb = true; lb = true; }
+  return { d: Math.max(1, Math.floor(x)), e, crit, lb };
+}
+function aiAction() {
+  const P = { easy: { sw: 0, rnd: 0.45, noise: 0.6 }, normal: { sw: 0.35, rnd: 0.12, noise: 0.3 }, hard: { sw: 0.6, rnd: 0.02, noise: 0.08 } }[level] || { sw: 0.35, rnd: 0.12, noise: 0.3 };
+  const a = cur('foe'), d = cur('you');
+  const bench = alive('foe').filter(i => i !== S.i.foe);
+  const offense = x => Math.max(...x.m.moves.filter(m => m[2] > 0).map(m => eff(m[1], d.m.type)));
+  const bestEff = offense(a);
+  if (bench.length && bestEff < 1 && R() < P.sw) {
+    let bi = bench[0], bs = -1;
+    bench.forEach(i => { const x = S.team.foe[i], s = offense(x) * (x.hp / x.m.hp); if (s > bs) { bs = s; bi = i; } });
+    if (bs > bestEff) return { k: 'sw', i: bi };
+  }
+  if (R() < P.rnd) return { k: 'move', i: Math.floor(R() * a.m.moves.length) };
+  let best_ = 0, bs = -1;
+  a.m.moves.forEach((mv, i) => {
+    const fx = mv[4] || {}; let s;
+    if (mv[2] > 0) s = mv[2] * eff(mv[1], d.m.type) * (mv[1] === a.m.type ? 1.5 : 1) * (mv[3] / 100) * (fx.pr && a.hp < a.m.hp / 2 ? 1.2 : 1) * spaceMult(mv[1], a) * (fx.multi ? 1.6 : 1) * (fx.spw && S.space ? 1.5 : 1);
+    else if (fx.heal) s = a.hp / a.m.hp < 0.45 ? 130 : 5;
+    else if (fx.clear) s = ((d.st.atk > 0 || d.st.def > 0 || d.st.spd > 0 || d.lemma) ? 85 : 5) + (fx.clear > 1 && (S.space || a.status) ? 40 : 0);
+    else if (fx.guard) s = a.flags.lastGuard ? 0 : 30;
+    else if (fx.lemma) s = a.lemma ? 5 : 55;
+    else if (fx.self) s = Object.keys(fx.self).some(k => a.st[k] < 1) ? 60 : 8;
+    else s = 20;
+    s *= 1 - P.noise / 2 + R() * P.noise;
+    if (s > bs) { bs = s; best_ = i; }
+  });
+  return { k: 'move', i: best_ };
+}
+function resetField(mon) { mon.st = { atk: 0, def: 0, spd: 0 }; mon.lemma = false; mon.guard = false; }
+async function switchTo(side, i, fainted) {
+  const old = cur(side); resetField(old); S.i[side] = i;
+  if (side === ME) say(fainted ? `行け、${cur(side).m.name}！` : `戻れ、${old.m.name}！ 行け、${cur(side).m.name}！`);
+  else say(`相手は${cur(side).m.name}を繰り出した！`);
+  render(); await sleep(700);
+  enter(cur(side)); render(); await sleep(300);
+}
+async function useMove(mon, mi) {
+  const def = cur(other(mon.side)), mv = mon.m.moves[mi], fx = mv[4] || {};
+  if (!fx.guard) mon.flags.lastGuard = false;
+  say(`${mon.m.name}の「${mv[0]}」！`); render(); lunge(mon.side, mv[1]); sfx('cast'); await sleep(700);
+  const lem = mon.lemma;
+  if (mv[2] === 0) {
+    if (fx.heal) { const h = Math.min(mon.m.hp - mon.hp, Math.ceil(mon.m.hp * fx.heal)); mon.hp += h; say(`${mon.m.name}のHPが${h}回復した。`); render(); fxHeal(mon.side); }
+    if (fx.lemma) { mon.lemma = true; say(`補題を用意した！ 次の攻撃が強くなる。`); }
+    if (fx.guard) {
+      if (mon.flags.lastGuard) { mon.flags.lastGuard = false; say('しかし守りは続かなかった。'); render(); await sleep(600); return; }
+      mon.guard = true; mon.flags.lastGuard = true;
+      say(`${mon.m.name}は定理で守りを固めた！`); fxGuard(mon.side); sfx('guard');
+    }
+    if (fx.clear) counter(mon, def, fx);
+    for (const k in (fx.self || {})) changeStage(mon, k, fx.self[k], mon);
+    render(); await sleep(700); return;
+  }
+  mon.lemma = false;
+  if (def.guard) { say(`${def.m.name}は守りを固めていて、攻撃は届かなかった。`); sfx('guard'); render(); await sleep(700); return; }
+  let acc = mv[3];
+  if (mon.m.ab === 'euclid' && mv[1] === 2) acc = 100;
+  if (mon.m.ab === 'pascal' && mv[3] <= 90) acc = 100;
+  if (mon.m.ab === 'bayes' && mon.flags.missed) acc = 100;
+  if (mon.m.ab === 'liuhui' && S.space) acc = 100;
+  mon.flags.missed = false;
+  if (R() * 100 >= acc) { mon.flags.missed = true; say('しかし外れた。'); sfx('miss'); if (mon.m.ab === 'kovalevskaya') { abSay(mon); changeStage(mon, 'spd', 1, mon); } render(); await sleep(600); return; }
+  const r = calc(mon, def, mv, lem);
+  mon.flags.lastT = mv[1];
+  if (mon.m.ab === 'dirichlet') mon.flags.chain = mv[1] === 0 ? (mon.flags.chain || 0) + 1 : 0;
+  let dealt = hurt(def, r.d, true);
+  if (dealt > 0) S.hit = { side: def.side };
+  let t = `${def.m.name}に${dealt}ダメージ。`;
+  if (r.e > 1) t += ' 効果は抜群だ！'; else if (r.e < 1) t += ' 効果はいまひとつ。';
+  if (r.crit) t += ' ひらめきの一撃！';
+  if (r.lb) t += ' ル・ブランの名で衝撃を和らげた。';
+  say(t); render(); playHit(def.side, mv[1], dealt, r); await sleep(800);
+  if (fx.multi && def.hp > 0) {
+    const r2 = calc(mon, def, mv, false);
+    const d2 = hurt(def, r2.d, false);
+    dealt += d2; S.hit = { side: def.side };
+    say(`続けてもう一撃！ ${def.m.name}に${d2}ダメージ。`); render(); playHit(def.side, mv[1], d2, r2); await sleep(700);
+  }
+  if (fx.drain && dealt > 0 && mon.hp > 0) { const h = Math.min(mon.m.hp - mon.hp, Math.max(1, Math.floor(dealt * fx.drain))); if (h > 0) { mon.hp += h; say(`${mon.m.name}はHPを${h}吸収した。`); fxHeal(mon.side); } }
+  if (fx.recoil && dealt > 0) { const rc = Math.max(1, Math.floor(dealt * fx.recoil)); hurt(mon, rc); say(`${mon.m.name}は反動で${rc}ダメージを受けた。`); }
+  const chance = Math.min(100, (fx.c || 100) * (mon.m.ab === 'turing' ? 2 : 1));
+  const chanceFoe = def.m.ab === 'weierstrass' ? chance / 2 : chance;
+  if (mon.hp > 0 && fx.self && R() * 100 < chance) for (const k in fx.self) changeStage(mon, k, fx.self[k], mon);
+  if (def.hp > 0 && r.e > 1 && def.m.ab === 'cantor') { abSay(def); changeStage(def, 'def', 1, def); }
+  if (def.hp > 0 && fx.clear) counter(mon, def, fx);
+  if (fx.space) setSpace(fx.space);
+  if (def.hp > 0 && R() * 100 < chanceFoe) {
+    for (const k in (fx.foe || {})) changeStage(def, k, fx.foe[k], mon);
+    if (fx.status && !def.status && def.m.ab !== 'turing' && def.m.ab !== 'poincare') { def.status = fx.status; say(`${def.m.name}は難問に取り憑かれた！`); }
+  }
+  faintCheck(def); faintCheck(mon);
+  render(); await sleep(500);
+}
+async function endOfTurn() {
+  cur('you').guard = false; cur('foe').guard = false;
+  for (const side of ['you', 'foe']) {
+    const m = cur(side);
+    if (m.hp <= 0) continue;
+    m.turnsIn++;
+    if (m.status === 'unsolved') {
+      const d = Math.max(1, Math.floor(m.m.hp / 8)); hurt(m, d); S.hit = { side };
+      say(`難問が${m.m.name}を蝕む。(${d}ダメージ)`); render(); await sleep(600); faintCheck(m);
+    }
+    if (m.hp > 0 && m.m.ab === 'euler' && m.hp < m.m.hp) { m.hp = Math.min(m.m.hp, m.hp + Math.max(1, Math.floor(m.m.hp / 16))); say(`${m.m.name}の特性「${AB.euler[0]}」でHPが回復した。`); fxHeal(side); }
+    if (m.hp > 0 && m.m.ab === 'riemann' && !m.flags.crit && m.hp <= m.m.hp / 2) { m.flags.crit = true; abSay(m); changeStage(m, 'atk', 1, m); }
+    if (m.hp > 0 && m.m.ab === 'fermat' && !m.flags.fm && m.turnsIn >= 3) { m.flags.fm = true; abSay(m); changeStage(m, 'atk', 1, m); }
+    if (m.hp > 0 && m.m.ab === 'abel' && !m.flags.sh && m.hp <= m.m.hp / 3) { m.flags.sh = true; abSay(m); changeStage(m, 'atk', 1, m); changeStage(m, 'spd', 1, m); }
+    render(); await sleep(200);
+  }
+  if (S.space) {
+    S.space.turns--;
+    if (S.space.turns <= 0) { say(`${SP[S.space.id].name}は元の空間に戻った。`); S.space = null; render(); await sleep(400); }
+  }
+}
+async function takeTurn(action) {
+  if (S.busy) return;
+  S.busy = true; S.phase = 'run'; render();
+  if (NET) return takeTurnNet(action);
+  await resolveTurn(action, aiAction());
+}
+// 1ターンを解決する。aYou=部屋の主側('you')の行動、aFoe=参加者側('foe')の行動。両者が同じ順序で実行する。
+async function resolveTurn(aYou, aFoe) {
+  const q = [];
+  if (aYou.k === 'sw') await switchTo('you', aYou.i, false);
+  if (aFoe.k === 'sw') await switchTo('foe', aFoe.i, false);
+  if (aYou.k === 'move') q.push({ mon: cur('you'), mi: aYou.i });
+  if (aFoe.k === 'move') q.push({ mon: cur('foe'), mi: aFoe.i });
+  q.forEach(x => { x.k = [((x.mon.m.moves[x.mi][4] || {}).pr || 0), x.mon.m.spd * stm(x.mon.st.spd), R()]; });
+  q.sort((a, b) => (b.k[0] - a.k[0]) || (b.k[1] - a.k[1]) || (b.k[2] - a.k[2]));
+  for (const x of q) {
+    if (cur(x.mon.side) !== x.mon || x.mon.hp <= 0) continue;
+    if (cur(other(x.mon.side)).hp <= 0) continue;
+    await useMove(x.mon, x.mi);
+  }
+  await endOfTurn();
+  await afterTurn();
+}
+async function afterTurn() {
+  const fd = alive('foe').length === 0, yd = alive('you').length === 0;
+  if (fd || yd) return finish(fd && !yd ? 'you' : yd && !fd ? 'foe' : (NET ? 'draw' : 'you'));
+  if (NET) {
+    const needs = ['you', 'foe'].filter(s => cur(s).hp <= 0);
+    if (needs.length) await netForced(needs);
+    S.turn++; S.phase = 'cmd'; S.busy = false; S.waiting = false; render(); return;
+  }
+  if (cur('foe').hp <= 0) await switchTo('foe', alive('foe')[0], true);
+  if (cur('you').hp <= 0) { S.phase = 'forced'; S.busy = false; say('次に出す数学者を選ぼう。'); render(); return; }
+  S.turn++; S.phase = 'cmd'; S.busy = false; render();
+}
+function finish(w) {
+  const won = w === ME || (w === 'draw' && !NET);
+  S.won = won; S.draw = w === 'draw'; S.phase = 'over'; S.busy = false;
+  if (!NET && won) { streak++; if (streak > best) { best = streak; try { localStorage.setItem('mc_best', String(best)); } catch (e) { } } }
+  say(S.draw ? '引き分けになった。' : won ? '相手の数学者は全員倒れた。' : 'こちらの数学者は全員倒れた。'); render(); fxEnd(won && !S.draw);
+}
+async function startBattle(carry) {
+  ME = 'you'; OPP = 'foe'; R = Math.random;
+  const pool = M.map(m => m.id).sort(() => R() - 0.5).slice(0, 3);
+  let you;
+  if (carry && S) {
+    you = S.team.you.map(x => {
+      const n = mkMon(x.m.id, 'you');
+      n.hp = x.hp > 0 ? Math.min(x.m.hp, x.hp + Math.ceil(x.m.hp * 0.35)) : Math.ceil(x.m.hp * 0.35);
+      return n;
+    });
+  } else { you = sel.map(id => mkMon(id, 'you')); streak = 0; }
+  const foe = pool.map(id => mkMon(id, 'foe'));
+  lastW = {};
+  S = { team: { you, foe }, i: { you: 0, foe: 0 }, log: [], busy: true, phase: 'run', turn: 1, hit: null, won: false, space: null };
+  say(`相手は${cur('foe').m.name}を繰り出した！`);
+  say(`行け、${cur('you').m.name}！`);
+  render(); await sleep(600);
+  enter(cur('you')); enter(cur('foe'));
+  S.busy = false; S.phase = 'cmd'; render();
+}
+
+/* ---------- オンライン対戦(WebRTC・サーバー不要) ---------- */
+// 2人のブラウザを直接つなぐ。接続コード(SDP)を手で送り合う方式なので、中継サーバーは要らない。
+// 対戦は「同じ種の乱数で、同じ行動から同じ結果を計算する」方式。毎ターン、行動だけを送り合う。
+const ONL = { open: false, step: 'menu', role: null, code: '', paste: '', status: '', error: '', ready: false, oppTeam: null, hostReady: false };
+let PC = null, DC = null, inbox = [], waiters = [];
+const CAN_P2P = typeof RTCPeerConnection !== 'undefined';
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function b64u(bytes) { let s = ''; bytes.forEach(b => { s += String.fromCharCode(b); }); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+function unb64u(str) { str = str.replace(/-/g, '+').replace(/_/g, '/'); while (str.length % 4) str += '='; return Uint8Array.from(atob(str), c => c.charCodeAt(0)); }
+async function streamBytes(bytes, stream) { const w = stream.writable.getWriter(); w.write(bytes); w.close(); return new Uint8Array(await new Response(stream.readable).arrayBuffer()); }
+async function packDesc(d) {
+  const raw = new TextEncoder().encode(JSON.stringify({ t: d.type, s: d.sdp }));
+  try { return 'MC1' + b64u(await streamBytes(raw, new CompressionStream('deflate-raw'))); } catch (e) { return 'MC0' + b64u(raw); }
+}
+async function unpackDesc(code) {
+  code = code.replace(/\s+/g, '');
+  if (!/^MC[01]/.test(code)) throw new Error('bad code');
+  const body = unb64u(code.slice(3));
+  const raw = code.slice(0, 3) === 'MC1' ? await streamBytes(body, new DecompressionStream('deflate-raw')) : body;
+  const o = JSON.parse(new TextDecoder().decode(raw));
+  if (o.t !== 'offer' && o.t !== 'answer') throw new Error('bad code');
+  return { type: o.t, sdp: o.s };
+}
+function gathered(pc) {
+  return new Promise(res => {
+    if (pc.iceGatheringState === 'complete') return res();
+    const t = setTimeout(res, 6000);
+    pc.addEventListener('icegatheringstatechange', () => { if (pc.iceGatheringState === 'complete') { clearTimeout(t); res(); } });
+  });
+}
+function netSend(o) { if (DC && DC.readyState === 'open') DC.send(JSON.stringify(o)); }
+const okIds = a => Array.isArray(a) && a.length === 3 && a.every(id => typeof id === 'string' && byId[id]);
+function netRecv(raw) {
+  let m; try { m = JSON.parse(raw); } catch (e) { return; }
+  if (!m || typeof m.t !== 'string') return;
+  if (m.t === 'team') { if (NET && NET.host && okIds(m.ids)) { ONL.oppTeam = m.ids; netMaybeStart(); if (!S) render(); } return; }
+  if (m.t === 'ready') { if (NET && !NET.host) { ONL.hostReady = true; if (!S) render(); } return; }
+  if (m.t === 'start') {
+    if (NET && !NET.host && okIds(m.host) && okIds(m.guest) && ONL.ready) startPvp(m.host, m.guest, m.seed >>> 0);
+    return;
+  }
+  if (m.t === 'bye') { netLost(); return; }
+  inbox.push(m); flushWaiters();
+}
+function waitMsg(pred) {
+  return new Promise((res, rej) => {
+    const f = () => { const i = inbox.findIndex(pred); if (i >= 0) { res(inbox.splice(i, 1)[0]); return true; } return false; };
+    if (!f()) waiters.push({ f, rej });
+  });
+}
+function flushWaiters() { waiters = waiters.filter(w => !w.f()); }
+function setupDC(dc) {
+  DC = dc;
+  dc.onopen = () => { NET = { host: ONL.role === 'host' }; ONL.ready = false; ONL.oppTeam = null; ONL.hostReady = false; ONL.error = ''; ONL.status = ''; render(); };
+  dc.onmessage = e => netRecv(e.data);
+  dc.onclose = () => netLost();
+}
+function newPC() {
+  PC = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+  PC.onconnectionstatechange = () => { if (PC && (PC.connectionState === 'failed' || PC.connectionState === 'closed')) netLost(); };
+  return PC;
+}
+function slowWarn() { setTimeout(() => { if (!NET && ONL.open && (ONL.step === 'host' || ONL.step === 'guest') && !ONL.error) { ONL.error = 'まだつながりません。コードが最後まで貼れているか確認してください。ネットワークによってはつながらないことがあります。'; render(); } }, 30000); }
+async function netHost() {
+  ONL.role = 'host'; ONL.step = 'host'; ONL.code = ''; ONL.paste = ''; ONL.error = ''; ONL.status = ''; render();
+  try {
+    const pc = newPC(); setupDC(pc.createDataChannel('mc'));
+    await pc.setLocalDescription(await pc.createOffer()); await gathered(pc);
+    ONL.code = await packDesc(pc.localDescription);
+  } catch (e) { ONL.error = '部屋を作れませんでした。'; }
+  render();
+}
+async function netHostConnect() {
+  ONL.error = '';
+  try { await PC.setRemoteDescription(await unpackDesc(ONL.paste)); ONL.status = '接続しています…'; slowWarn(); } catch (e) { ONL.error = '返信コードを読み取れませんでした。'; }
+  render();
+}
+async function netGuestAnswer() {
+  ONL.error = ''; ONL.code = '';
+  try {
+    const offer = await unpackDesc(ONL.paste);
+    const pc = newPC(); pc.ondatachannel = e => setupDC(e.channel);
+    await pc.setRemoteDescription(offer); await pc.setLocalDescription(await pc.createAnswer()); await gathered(pc);
+    ONL.code = await packDesc(pc.localDescription); ONL.status = '返信コードを部屋の主に送ってください。つながると自動で進みます。'; slowWarn();
+  } catch (e) { ONL.error = 'コードを読み取れませんでした。'; }
+  render();
+}
+function netLeave() {
+  if (DC) { DC.onclose = null; DC.onmessage = null; try { netSend({ t: 'bye' }); DC.close(); } catch (e) { } }
+  if (PC) { PC.onconnectionstatechange = null; try { PC.close(); } catch (e) { } }
+  DC = PC = null; NET = null; inbox = [];
+  waiters.forEach(w => w.rej(new Error('closed'))); waiters = [];
+  Object.assign(ONL, { step: 'menu', role: null, code: '', paste: '', status: '', error: '', ready: false, oppTeam: null, hostReady: false });
+  ME = 'you'; OPP = 'foe'; R = Math.random; S = null;
+}
+function netLost() {
+  waiters.forEach(w => w.rej(new Error('closed'))); waiters = [];
+  if (!NET) return;
+  if (S && S.phase !== 'over') { S.phase = 'over'; S.busy = false; S.lost = true; S.won = false; S.draw = false; say('相手との接続が切れた。'); render(); }
+  else if (!S) { netLeave(); ONL.open = true; ONL.error = '相手との接続が切れました。'; render(); }
+}
+function lobbyStatus() { const opp = NET.host ? ONL.oppTeam : ONL.hostReady; return `相手：${opp ? '準備完了' : '選択中'}。`; }
+function netReady() {
+  ONL.ready = true;
+  if (NET.host) { netSend({ t: 'ready' }); netMaybeStart(); } else netSend({ t: 'team', ids: sel.slice() });
+  render();
+}
+function netMaybeStart() {
+  if (!NET || !NET.host || !ONL.ready || !ONL.oppTeam) return;
+  const seed = crypto.getRandomValues(new Uint32Array(1))[0], h = sel.slice(), g = ONL.oppTeam;
+  netSend({ t: 'start', host: h, guest: g, seed });
+  startPvp(h, g, seed);
+}
+async function startPvp(hostIds, guestIds, seed) {
+  ONL.ready = false; ONL.oppTeam = null; ONL.hostReady = false; inbox = [];
+  R = mulberry(seed); ME = NET.host ? 'you' : 'foe'; OPP = other(ME); lastW = {};
+  S = { team: { you: hostIds.map(id => mkMon(id, 'you')), foe: guestIds.map(id => mkMon(id, 'foe')) }, i: { you: 0, foe: 0 }, log: [], busy: true, phase: 'run', turn: 1, hit: null, won: false, space: null, waiting: false };
+  say(`相手は${cur(OPP).m.name}を繰り出した！`);
+  say(`行け、${cur(ME).m.name}！`);
+  render(); await sleep(600);
+  enter(cur('you')); enter(cur('foe'));
+  S.busy = false; S.phase = 'cmd'; render();
+}
+// 相手から届いた値は信用せず、両者が同じ関数で補正する(不正な入力でも結果がずれない)
+function sanAct(side, a) {
+  const c = cur(side);
+  if (a && a.k === 'sw' && Number.isInteger(a.i) && S.team[side][a.i] && a.i !== S.i[side] && S.team[side][a.i].hp > 0) return { k: 'sw', i: a.i };
+  if (a && a.k === 'move' && Number.isInteger(a.i) && c.m.moves[a.i]) return { k: 'move', i: a.i };
+  return { k: 'move', i: 0 };
+}
+function sanPick(side, i) {
+  const al = alive(side);
+  return Number.isInteger(i) && al.includes(i) ? i : al[0];
+}
+async function takeTurnNet(action) {
+  try {
+    netSend({ t: 'act', n: S.turn, a: action });
+    S.waiting = !inbox.some(m => m.t === 'act' && m.n === S.turn); render();
+    const m = await waitMsg(m => m.t === 'act' && m.n === S.turn);
+    S.waiting = false;
+    const mine = action, theirs = m.a;
+    const aYou = sanAct('you', NET.host ? mine : theirs), aFoe = sanAct('foe', NET.host ? theirs : mine);
+    await resolveTurn(aYou, aFoe);
+  } catch (e) { }
+}
+async function netForced(needs) {
+  const picks = {};
+  if (needs.includes(ME)) {
+    S.phase = 'forced'; S.busy = false; say('次に出す数学者を選ぼう。'); render();
+    const i = await new Promise(r => { S.pickResolve = r; });
+    S.busy = true; S.phase = 'wait'; picks[ME] = i; netSend({ t: 'pick', n: S.turn, i }); S.waiting = needs.includes(OPP); render();
+  } else { S.phase = 'wait'; S.busy = true; S.waiting = true; render(); }
+  if (needs.includes(OPP)) { const m = await waitMsg(m => m.t === 'pick' && m.n === S.turn); picks[OPP] = m.i; }
+  S.waiting = false;
+  for (const s of ['you', 'foe']) if (needs.includes(s)) await switchTo(s, sanPick(s, picks[s]), true);
+}
+function renderOnline() {
+  const o = ONL;
+  const note = '<p class="muted" style="font-size:12px">2人のブラウザを直接つなぐ仕組み(WebRTC)です。中継サーバーを使わないので、コードを送り合う手間がありますが、公開用の設備は要りません。共有プレビューなど、埋め込み表示のページでは接続できないことがあります。公開したページをブラウザで直接開いて遊んでください。</p>';
+  const err = o.error ? `<p class="warn">${esc(o.error)}</p>` : '';
+  const st = o.status ? `<p class="muted">${esc(o.status)}</p>` : '';
+  let body = '';
+  if (!CAN_P2P) body = '<p class="warn">このブラウザはWebRTCに対応していないため、オンライン対戦は使えません。</p>';
+  else if (o.step === 'menu') body = '<p>相手と接続コードを送り合って対戦します。チャットなどで送れば大丈夫です。</p><div class="btns"><button class="act" data-act="net-host">部屋を作る</button><button class="act ghost" data-act="net-join">部屋に入る</button></div>';
+  else if (o.step === 'host') body = `<ol class="steps"><li>「あなたのコード」を相手に送ります。</li><li>相手から届いた「返信コード」を下の欄に貼り付けて、接続を押します。</li></ol>
+    <label class="fld">あなたのコード<textarea id="codeOut" rows="4" readonly>${o.code || '作成中…'}</textarea></label>
+    <div class="btns"><button class="act ghost sm" data-act="net-copy">コードをコピー</button></div>
+    <label class="fld">相手の返信コード<textarea id="codeIn" rows="4" data-paste="1">${esc(o.paste)}</textarea></label>
+    <div class="btns"><button class="act" data-act="net-connect" ${o.code ? '' : 'disabled'}>接続</button></div>`;
+  else body = `<ol class="steps"><li>部屋の主から届いたコードを貼り付けて、「返信コードを作る」を押します。</li><li>できた返信コードを部屋の主に送ります。つながると自動で進みます。</li></ol>
+    <label class="fld">部屋の主のコード<textarea id="codeIn" rows="4" data-paste="1">${esc(o.paste)}</textarea></label>
+    <div class="btns"><button class="act" data-act="net-answer">返信コードを作る</button></div>
+    ${o.code ? `<label class="fld">あなたの返信コード<textarea id="codeOut" rows="4" readonly>${o.code}</textarea></label><div class="btns"><button class="act ghost sm" data-act="net-copy">コードをコピー</button></div>` : ''}`;
+  return `<div class="panel online"><h2>オンライン対戦</h2>${body}${err}${st}<div class="btns" style="margin-top:12px"><button class="act ghost" data-act="net-back">戻る</button></div>${note}</div>`;
+}
+
+/* ---------- イベント ---------- */
+$app.addEventListener('click', async e => {
+  const b = e.target.closest('[data-act]');
+  if (!b || b.disabled) return;
+  const act = b.dataset.act;
+  if (act !== 'snd') sfx('tick');
+  if (act === 'pick') {
+    const id = b.dataset.id, k = sel.indexOf(id);
+    if (k >= 0) sel.splice(k, 1); else if (sel.length < 3) sel.push(id);
+    render();
+  } else if (act === 'filter') { filt = +b.dataset.t; render(); }
+  else if (act === 'random') { sel = M.map(m => m.id).sort(() => Math.random() - 0.5).slice(0, 3); render(); }
+  else if (act === 'clear') { sel = []; render(); }
+  else if (act === 'start' || act === 'again') startBattle(false);
+  else if (act === 'next') startBattle(true);
+  else if (act === 'menu') { S = null; render(); }
+  else if (act === 'level') { level = b.dataset.l; try { localStorage.setItem('mc_level', level); } catch (e) { } render(); }
+  else if (act === 'online') { ONL.open = true; ONL.step = 'menu'; ONL.error = ''; ONL.status = ''; render(); }
+  else if (act === 'net-host') netHost();
+  else if (act === 'net-join') { ONL.role = 'guest'; ONL.step = 'guest'; ONL.code = ''; ONL.paste = ''; ONL.error = ''; ONL.status = ''; render(); }
+  else if (act === 'net-answer') netGuestAnswer();
+  else if (act === 'net-connect') netHostConnect();
+  else if (act === 'net-copy') { const t = document.getElementById('codeOut'); if (t) { t.select(); try { navigator.clipboard.writeText(t.value).catch(() => { }); } catch (e) { } } }
+  else if (act === 'net-back' || act === 'leave') { netLeave(); ONL.open = false; render(); }
+  else if (act === 'ready') netReady();
+  else if (act === 'lobby') { S = null; render(); }
+  else if (act === 'move') takeTurn({ k: 'move', i: +b.dataset.i });
+  else if (act === 'sw') takeTurn({ k: 'sw', i: +b.dataset.i });
+  else if (act === 'forced') {
+    if (S.busy) return;
+    if (NET) { if (S.pickResolve) { const f = S.pickResolve; S.pickResolve = null; f(+b.dataset.i); } return; }
+    S.busy = true; await switchTo('you', +b.dataset.i, true);
+    S.phase = 'cmd'; S.busy = false; render();
+  } else if (act === 'hint') { showHint = b.checked; render(); }
+  else if (act === 'snd') { soundOn = b.checked; if (soundOn) sfx('tick'); }
+  else if (act === 'unportrait') { delete portraits[b.dataset.id]; savePortraits(); render(); }
+});
+$app.addEventListener('input', e => { if (e.target && e.target.dataset && e.target.dataset.paste) ONL.paste = e.target.value; });
+$app.addEventListener('change', e => {
+  const inp = e.target.closest('[data-portrait]');
+  if (!inp || !inp.files || !inp.files[0]) return;
+  const id = inp.dataset.portrait, fr = new FileReader();
+  fr.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas'); c.width = c.height = 160;
+      const s = Math.min(img.width, img.height);
+      c.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 160, 160);
+      portraits[id] = c.toDataURL('image/jpeg', 0.82); savePortraits(); render();
+    };
+    img.src = fr.result;
+  };
+  fr.readAsDataURL(inp.files[0]);
+});
+document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => { location.hash = b.dataset.tab; render(); }));
+addEventListener('hashchange', render);
+render();
+</script>
+
+</body></html>
